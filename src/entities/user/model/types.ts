@@ -8,7 +8,12 @@ interface ITestUsers {
 interface IUser {
   id: number
   username: string
-  image: string
+  firstName: string
+  lastName: string
+  maidenName: string
+  age: number
+  gender: string
+  email: string
 }
 
 export type { IUser, ITestUsers }

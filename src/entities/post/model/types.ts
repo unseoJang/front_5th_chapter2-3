@@ -1,3 +1,5 @@
+import { IUser } from "../../user/model/types"
+
 interface ITestPosts {
   posts: IPosts[]
   total: number
@@ -18,8 +20,13 @@ interface IPosts {
   userId: number
 }
 
+interface IPostWithAuthor extends IPosts {
+  author: IUser
+}
+
 interface ITags {
+  slug: string
   tags: string[]
 }
 
-export type { IPosts, ITestPosts, ITags }
+export type { IPosts, IPostWithAuthor, ITestPosts, ITags }
