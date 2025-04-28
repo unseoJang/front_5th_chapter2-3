@@ -83,6 +83,14 @@ TanstackQuery를 이용하여 코드를 개선하기
 ```
 
 **단계별 진행 과정**
-1. 상태관리 설치
-2. shared > ui 공통 컴포넌트 UI 분리
-3. 타입 먼저 정리
+[x] 1. 상태관리 설치
+[x] 2. shared > ui 공통 컴포넌트 UI 분리
+[x] 3. 타입 먼저 정리
+[] 4. PostsManager.tsx 에서 useState → zustand로 전부 교체
+[] 5. PostTable.tsx 컴포넌트 분리해서 게시글 테이블 UI 옮김
+[] 6. PostFilters.tsx 컴포넌트 분리해서 검색/필터 드롭다운 옮김
+[] 7. PostDialogs.tsx 컴포넌트 분리해서 게시글 추가/수정 다이얼로그 옮김
+[] 8. CommentList.tsx 컴포넌트 분리해서 댓글 리스트/관리 옮김
+[] 9. UserModal.tsx 컴포넌트 분리해서 유저 정보 모달 옮김
+[] 10. API 호출 함수들은 postApi.ts, commentApi.ts로 분리
+[] 11. 최종적으로 PostManager.tsx는 위 컴포넌트들을 조립하는 코드만 남긴다

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
@@ -31,35 +31,64 @@ import type { IPosts, ITags, ITestPosts } from "../entities/post/model/types"
 import { ITestUsers, IUser } from "../entities/user/model/types"
 import { IComment, ITestComments } from "../entities/comment/model/types"
 
+// zustand
+import { usePostStore } from "@/entities/post/model/postStore"
+import { useCommentStore } from "@/entities/comment/model/commentStore"
+
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
 
   // 상태 관리
-  const [posts, setPosts] = useState<IPosts[]>([])
-  const [total, setTotal] = useState<number>(0)
-  const [skip, setSkip] = useState<number>(parseInt(queryParams.get("skip") || "0"))
-  const [limit, setLimit] = useState<number>(parseInt(queryParams.get("limit") || "10"))
-  const [searchQuery, setSearchQuery] = useState<string>(queryParams.get("search") || "")
-  const [selectedPost, setSelectedPost] = useState<IPosts | null>(null)
-  const [sortBy, setSortBy] = useState<string>(queryParams.get("sortBy") || "")
-  const [sortOrder, setSortOrder] = useState<string>(queryParams.get("sortOrder") || "asc")
-  const [showAddDialog, setShowAddDialog] = useState<boolean>(false)
-  const [showEditDialog, setShowEditDialog] = useState<boolean>(false)
-  const [newPost, setNewPost] = useState<IPosts>({ title: "", body: "", userId: 1 })
-  const [loading, setLoading] = useState<boolean>(false)
-  const [tags, setTags] = useState<ITags[]>([])
-  const [selectedTag, setSelectedTag] = useState<string>(queryParams.get("tag") || "")
-  const [comments, setComments] = useState<ITestComments>({ comments: [], limit: 0, skip: 0, total: 0 })
-  const [selectedComment, setSelectedComment] = useState<IComment | null>(null)
-  const [newComment, setNewComment] = useState<IComment>({ body: "", postId: 0, userId: 1 })
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState<boolean>(false)
-  const [showEditCommentDialog, setShowEditCommentDialog] = useState<boolean>(false)
-  const [showPostDetailDialog, setShowPostDetailDialog] = useState<boolean>(false)
-  const [showUserModal, setShowUserModal] = useState<boolean>(false)
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
+  // const [posts, setPosts] = useState<IPosts[]>([])
+  // const [total, setTotal] = useState<number>(0)
+  // const [skip, setSkip] = useState<number>(parseInt(queryParams.get("skip") || "0"))
+  // const [limit, setLimit] = useState<number>(parseInt(queryParams.get("limit") || "10"))
+  // const [searchQuery, setSearchQuery] = useState<string>(queryParams.get("search") || "")
+  // const [selectedPost, setSelectedPost] = useState<IPosts | null>(null)
+  // const [sortBy, setSortBy] = useState<string>(queryParams.get("sortBy") || "")
+  // const [sortOrder, setSortOrder] = useState<string>(queryParams.get("sortOrder") || "asc")
+  // const [showAddDialog, setShowAddDialog] = useState<boolean>(false)
+  // const [showEditDialog, setShowEditDialog] = useState<boolean>(false)
+  // const [newPost, setNewPost] = useState<IPosts>({ title: "", body: "", userId: 1 })
+  // const [loading, setLoading] = useState<boolean>(false)
+  // const [tags, setTags] = useState<ITags[]>([])
+  // const [selectedTag, setSelectedTag] = useState<string>(queryParams.get("tag") || "")
+  // const [comments, setComments] = useState<ITestComments>({ comments: [], limit: 0, skip: 0, total: 0 })
+  // const [selectedComment, setSelectedComment] = useState<IComment | null>(null)
+  // const [newComment, setNewComment] = useState<IComment>({ body: "", postId: 0, userId: 1 })
+  // const [showAddCommentDialog, setShowAddCommentDialog] = useState<boolean>(false)
+  // const [showEditCommentDialog, setShowEditCommentDialog] = useState<boolean>(false)
+  // const [showPostDetailDialog, setShowPostDetailDialog] = useState<boolean>(false)
+  // const [showUserModal, setShowUserModal] = useState<boolean>(false)
+  // const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
 
+  // 전역 상태 관리
+  const {
+    posts,
+    selectedPost,
+    tags,
+    skip,
+    limit,
+    searchQuery,
+    sortBy,
+    sortOrder,
+    selectedTag,
+    loading,
+    setPosts,
+    setSelectedPost,
+    setTags,
+    setSkip,
+    setLimit,
+    setSearchQuery,
+    setSortBy,
+    setSortOrder,
+    setSelectedTag,
+    setLoading,
+  } = usePostStore()
+
+  const { comments, selectedComment } = useCommentStore()
   // URL 업데이트 함수
   const updateURL = () => {
     const params = new URLSearchParams()
@@ -391,9 +420,9 @@ const PostsManager = () => {
               </div>
             </TableCell>
             <TableCell>
-              <div className="flex items-center space-x-2 cursor-pointer" onClick={() => openUserModal(post.author)}>
-                <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
-                <span>{post.author?.username}</span>
+              <div className="flex items-center space-x-2 cursor-pointer" onClick={() => openUserModal(post.authorId)}>
+                <img src={post.authorImage} alt={post.authorUsername} className="w-8 h-8 rounded-full" />
+                <span>{post.authorUsername}</span>
               </div>
             </TableCell>
             <TableCell>
@@ -431,7 +460,7 @@ const PostsManager = () => {
   )
 
   // 댓글 렌더링
-  const renderComments = (postId) => (
+  const renderComments = (postId: number) => (
     <div className="mt-2">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold">댓글</h3>
@@ -450,11 +479,11 @@ const PostsManager = () => {
         {comments[postId]?.map((comment) => (
           <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
             <div className="flex items-center space-x-2 overflow-hidden">
-              <span className="font-medium truncate">{comment.user.username}:</span>
+              <span className="font-medium truncate">{comment.user?.username}:</span>
               <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" onClick={() => likeComment(comment.id, postId)}>
+              <Button variant="ghost" size="sm" onClick={() => comment.id && likeComment(comment.id, postId)}>
                 <ThumbsUp className="w-3 h-3" />
                 <span className="ml-1 text-xs">{comment.likes}</span>
               </Button>
@@ -468,7 +497,7 @@ const PostsManager = () => {
               >
                 <Edit2 className="w-3 h-3" />
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => deleteComment(comment.id, postId)}>
+              <Button variant="ghost" size="sm" onClick={() => comment.id && deleteComment(comment.id, postId)}>
                 <Trash2 className="w-3 h-3" />
               </Button>
             </div>

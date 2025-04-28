@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      middleware:
+        specifier: ^1.0.0
+        version: 1.0.0
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -1615,6 +1618,9 @@ packages:
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
+
+  middleware@1.0.0:
+    resolution: {integrity: sha512-c3rqqJbL4fMsacWYc1Cgck/ohjVh6s9rwX8wb2BnJSdEwNguf8La0QukSEPAeAHKl8I9WrCnJOb70YgyNCCzjg==}
 
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -3713,6 +3719,8 @@ snapshots:
     dependencies:
       braces: 3.0.3
       picomatch: 2.3.1
+
+  middleware@1.0.0: {}
 
   mime-db@1.52.0: {}
 
