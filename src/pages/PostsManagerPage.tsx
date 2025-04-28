@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
+import { Edit2, Plus, Search, ThumbsUp, Trash2 } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
   Button,
@@ -17,23 +17,22 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Textarea,
 } from "../shared/ui"
 
 // types
 import type { IPosts, ITags, ITestPosts } from "../entities/post/model/types"
-import { ITestUsers, IUser } from "../entities/user/model/types"
-import { IComment, ITestComments } from "../entities/comment/model/types"
+import type { ITestUsers, IUser } from "../entities/user/model/types"
+import type { IComment, ITestComments } from "../entities/comment/model/types"
 
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
 import { useCommentStore } from "@/entities/comment/model/commentStore"
+import { PostTable } from "@/entities/comment/ui/PostTable"
+import { useUserStore } from "@/entities/user/model/userStore"
+
+// lib
+import { highlightText } from "@/shared/lib/highlightText"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -86,9 +85,26 @@ const PostsManager = () => {
     setSortOrder,
     setSelectedTag,
     setLoading,
+    showEditDialog,
+    setShowEditDialog,
+    total,
+    setTotal,
+    setShowAddDialog,
+    showAddDialog,
+    newPost,
+    setNewPost,
+    showPostDetailDialog,
+    setShowPostDetailDialog,
+    showAddCommentDialog,
+    setShowAddCommentDialog,
+    showEditCommentDialog,
+    setShowEditCommentDialog,
+    showUserModal,
+    setShowUserModal,
   } = usePostStore()
+  const { users, selectedUser, loading: userLoading } = useUserStore()
 
-  const { comments, selectedComment } = useCommentStore()
+  const { comments, selectedComment, newComment, setComments, setNewComment } = useCommentStore()
   // URL 업데이트 함수
   const updateURL = () => {
     const params = new URLSearchParams()
@@ -115,7 +131,7 @@ const PostsManager = () => {
       })
       .then((response) => response.json())
       .then((users) => {
-        usersData = users
+        usersData = users.users // <-- 여기 중요! data.users로 고쳐야 돼
         const postsWithUsers = postsData.posts.map((post) => ({
           ...post,
           author: usersData.find((user: { id: number }) => user.id === post.userId),
@@ -364,99 +380,21 @@ const PostsManager = () => {
     setSelectedTag(params.get("tag") || "")
   }, [location.search])
 
-  // 하이라이트 함수 추가
-  const highlightText = (text: string, highlight: string) => {
-    if (!text) return null
-    if (!highlight.trim()) {
-      return <span>{text}</span>
-    }
-    const regex = new RegExp(`(${highlight})`, "gi")
-    const parts = text.split(regex)
-    return (
-      <span>
-        {parts.map((part, i) => (regex.test(part) ? <mark key={i}>{part}</mark> : <span key={i}>{part}</span>))}
-      </span>
-    )
-  }
-
   // 게시물 테이블 렌더링
   const renderPostTable = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[50px]">ID</TableHead>
-          <TableHead>제목</TableHead>
-          <TableHead className="w-[150px]">작성자</TableHead>
-          <TableHead className="w-[150px]">반응</TableHead>
-          <TableHead className="w-[150px]">작업</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {posts.map((post) => (
-          <TableRow key={post.id}>
-            <TableCell>{post.id}</TableCell>
-            <TableCell>
-              <div className="space-y-1">
-                <div>{highlightText(post.title, searchQuery)}</div>
-
-                <div className="flex flex-wrap gap-1">
-                  {post.tags?.map((tag) => (
-                    <span
-                      key={tag}
-                      className={`px-1 text-[9px] font-semibold rounded-[4px] cursor-pointer ${
-                        selectedTag === tag
-                          ? "text-white bg-blue-500 hover:bg-blue-600"
-                          : "text-blue-800 bg-blue-100 hover:bg-blue-200"
-                      }`}
-                      onClick={() => {
-                        setSelectedTag(tag)
-                        updateURL()
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center space-x-2 cursor-pointer" onClick={() => openUserModal(post.authorId)}>
-                <img src={post.authorImage} alt={post.authorUsername} className="w-8 h-8 rounded-full" />
-                <span>{post.authorUsername}</span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <ThumbsUp className="w-4 h-4" />
-                <span>{post.reactions?.likes || 0}</span>
-                <ThumbsDown className="w-4 h-4" />
-                <span>{post.reactions?.dislikes || 0}</span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => openPostDetail(post)}>
-                  <MessageSquare className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedPost(post)
-                    setShowEditDialog(true)
-                  }}
-                >
-                  <Edit2 className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => deletePost(post.id)}>
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <PostTable
+      posts={posts}
+      searchQuery={searchQuery}
+      onOpenPostDetail={openPostDetail}
+      onOpenUserModal={openUserModal}
+      onOpenEditDialog={(post) => {
+        setSelectedPost(post)
+        setShowEditDialog(true)
+      }}
+      onDeletePost={deletePost}
+      onSelectTag={setSelectedTag}
+      selectedTag={""}
+    />
   )
 
   // 댓글 렌더링

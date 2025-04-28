@@ -18,6 +18,9 @@ interface IPosts {
   }
   views?: number
   userId: number
+  authorId: string
+  authorImage?: string
+  authorUsername?: string
 }
 
 interface IPostWithAuthor extends IPosts {

@@ -14,6 +14,7 @@ interface IUser {
   age: number
   gender: string
   email: string
+  image: string
 }
 
 export type { IUser, ITestUsers }
