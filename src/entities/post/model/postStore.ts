@@ -14,6 +14,17 @@ interface PostState {
   sortOrder: string
   selectedTag: string
   loading: boolean
+  showAddDialog: boolean
+  showEditDialog: boolean
+  showPostDetailDialog: boolean
+  showAddCommentDialog: boolean
+  showEditCommentDialog: boolean
+  showUserModal: boolean
+  newPost: {
+    title: string
+    body: string
+    userId: number
+  }
 
   setPosts: (posts: IPosts[]) => void
   setSelectedPost: (post: IPosts | null) => void
@@ -26,6 +37,13 @@ interface PostState {
   setSortOrder: (sortOrder: string) => void
   setSelectedTag: (selectedTag: string) => void
   setLoading: (loading: boolean) => void
+  setShowEditDialog: (value: boolean) => void
+  setShowAddDialog: (value: boolean) => void
+  setNewPost: (post: { title: string; body: string; userId: number }) => void
+  setShowPostDetailDialog: (value: boolean) => void
+  setShowAddCommentDialog: (value: boolean) => void
+  setShowEditCommentDialog: (value: boolean) => void
+  setShowUserModal: (value: boolean) => void
 }
 
 export const usePostStore = create<PostState>()(
@@ -42,6 +60,17 @@ export const usePostStore = create<PostState>()(
       sortOrder: "asc",
       selectedTag: "",
       loading: false,
+      showEditDialog: false,
+      showAddDialog: false,
+      newPost: {
+        title: "",
+        body: "",
+        userId: 1,
+      },
+      showPostDetailDialog: false,
+      showAddCommentDialog: false,
+      showEditCommentDialog: false,
+      showUserModal: false,
 
       setPosts: (posts) => set({ posts }),
       setSelectedPost: (post) => set({ selectedPost: post }),
@@ -54,6 +83,13 @@ export const usePostStore = create<PostState>()(
       setSortOrder: (sortOrder) => set({ sortOrder }),
       setSelectedTag: (selectedTag) => set({ selectedTag }),
       setLoading: (loading) => set({ loading }),
+      setShowEditDialog: (value) => set({ showEditDialog: value }),
+      setShowAddDialog: (value) => set({ showAddDialog: value }),
+      setNewPost: (post) => set({ newPost: post }),
+      setShowPostDetailDialog: (value) => set({ showPostDetailDialog: value }),
+      setShowAddCommentDialog: (value) => set({ showAddCommentDialog: value }),
+      setShowEditCommentDialog: (value) => set({ showEditCommentDialog: value }),
+      setShowUserModal: (value) => set({ showUserModal: value }),
     }),
     { name: "PostStore" },
   ),
