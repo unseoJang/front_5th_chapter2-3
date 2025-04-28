@@ -28,7 +28,7 @@ import type { IComment, ITestComments } from "../entities/comment/model/types"
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
 import { useCommentStore } from "@/entities/comment/model/commentStore"
-import { PostTable } from "@/entities/comment/ui/PostTable"
+import { PostTable } from "@/entities/user/ui/PostTable"
 import { useUserStore } from "@/entities/user/model/userStore"
 
 // lib
