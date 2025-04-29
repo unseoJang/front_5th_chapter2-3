@@ -44,9 +44,9 @@
 - [ ] shared 공통 컴포넌트를 분리했나요?
 - [ ] shared 공통 로직을 분리했나요?
 - [ ] entities를 중심으로 type을 정의하고 model을 분리했나요?
-- [ ] entities를 중심으로 ui를 분리했나요?
+- [x] entities를 중심으로 ui를 분리했나요?
 - [ ] entities를 중심으로 api를 분리했나요?
-- [ ] feature를 중심으로 사용자행동(이벤트 처리)를 분리했나요?
+- [x] feature를 중심으로 사용자행동(이벤트 처리)를 분리했나요?
 - [ ] feature를 중심으로 ui를 분리했나요?
 - [ ] feature를 중심으로 api를 분리했나요?
 - [ ] widget을 중심으로 데이터를 재사용가능한 형태로 분리했나요?
@@ -86,8 +86,8 @@ TanstackQuery를 이용하여 코드를 개선하기
 [x] 1. 상태관리 설치
 [x] 2. shared > ui 공통 컴포넌트 UI 분리
 [x] 3. 타입 먼저 정리
-[] 4. PostsManager.tsx 에서 useState → zustand로 전부 교체
-[] 5. PostTable.tsx 컴포넌트 분리해서 게시글 테이블 UI 옮김
+[x] 4. PostsManager.tsx 에서 useState → zustand로 전부 교체
+[x] 5. PostTable.tsx 컴포넌트 분리해서 게시글 테이블 UI 옮김
 [] 6. PostFilters.tsx 컴포넌트 분리해서 검색/필터 드롭다운 옮김
 [] 7. PostDialogs.tsx 컴포넌트 분리해서 게시글 추가/수정 다이얼로그 옮김
 [] 8. CommentList.tsx 컴포넌트 분리해서 댓글 리스트/관리 옮김

@@ -30,6 +30,7 @@ interface IPostWithAuthor extends IPosts {
 interface ITags {
   slug: string
   tags: string[]
+  url?: string
 }
 
 export type { IPosts, IPostWithAuthor, ITestPosts, ITags }

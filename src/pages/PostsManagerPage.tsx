@@ -21,23 +21,23 @@ import {
 } from "../shared/ui"
 
 // types
-import type { IPosts, ITags, ITestPosts } from "../entities/post/model/types"
+import type { IPosts, ITestPosts } from "../entities/post/model/types"
 import type { ITestUsers, IUser } from "../entities/user/model/types"
-import type { IComment, ITestComments } from "../entities/comment/model/types"
 
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
 import { useCommentStore } from "@/entities/comment/model/commentStore"
-import { PostTable } from "@/entities/user/ui/PostTable"
+import { PostTable } from "@/entities/post/ui/PostTable"
 import { useUserStore } from "@/entities/user/model/userStore"
 
 // lib
 import { highlightText } from "@/shared/lib/highlightText"
+import PostFilters from "@/entities/post/ui/PostFilters"
 
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
+  // const queryParams = new URLSearchParams(location.search)
 
   // 상태 관리
   // const [posts, setPosts] = useState<IPosts[]>([])
@@ -257,6 +257,7 @@ const PostsManager = () => {
       const response = await fetch(`/api/comments/post/${postId}`)
       const data = await response.json()
       setComments((prev) => ({ ...prev, [postId]: data.comments }))
+      console.log("댓글 가져오기:", comments)
     } catch (error) {
       console.error("댓글 가져오기 오류:", error)
     }
@@ -328,10 +329,13 @@ const PostsManager = () => {
         }),
       })
       const data = await response.json()
+      console.log("수정된 댓글 데이터", data)
+
       setComments((prev) => ({
         ...prev,
         [postId]: prev[postId].map((comment) => (comment.id === data.id ? data : comment)),
       }))
+      console.log("해당 postId 댓글 목록", comments[postId])
     } catch (error) {
       console.error("댓글 좋아요 오류:", error)
     }
@@ -459,7 +463,7 @@ const PostsManager = () => {
       <CardContent>
         <div className="flex flex-col gap-4">
           {/* 검색 및 필터 컨트롤 */}
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -512,7 +516,24 @@ const PostsManager = () => {
                 <SelectItem value="desc">내림차순</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
+
+          <PostFilters
+            searchQuery={searchQuery}
+            selectedTag={selectedTag}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            tags={tags}
+            onChangeSearchQuery={setSearchQuery}
+            onChangeTag={(value) => {
+              setSelectedTag(value)
+              fetchPostsByTag(value)
+              updateURL()
+            }}
+            onChangeSortBy={setSortBy}
+            onChangeSortOrder={setSortOrder}
+            onSearch={searchPosts}
+          />
 
           {/* 게시물 테이블 */}
           {loading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
