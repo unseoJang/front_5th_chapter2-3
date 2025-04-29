@@ -73,8 +73,8 @@ export const PostTable = ({
                 } as IUser)
               }
             >
-              <img src={post.authorImage} alt={post.authorUsername} className="w-8 h-8 rounded-full" />
-              <span>{post.authorUsername}</span>
+              <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
+              <span>{post.author?.username}</span>
             </div>
           </TableCell>
           <TableCell>

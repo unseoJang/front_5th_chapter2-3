@@ -8,6 +8,7 @@ interface ITestPosts {
 }
 
 interface IPosts {
+  author: Author
   id?: number
   title?: string
   body?: string
@@ -21,6 +22,11 @@ interface IPosts {
   authorId: string
   authorImage?: string
   authorUsername?: string
+}
+
+interface Author{
+  image: string
+  username: string
 }
 
 interface IPostWithAuthor extends IPosts {

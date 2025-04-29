@@ -321,19 +321,25 @@ const PostsManager = () => {
   // 댓글 좋아요
   const likeComment = async (id: number, postId: number) => {
     try {
+      const oldComment = comments[postId]?.find((c) => c.id === id)
+      if (!oldComment) return
+
+      const updatedLikes = oldComment.likes + 1
+
       const response = await fetch(`/api/comments/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          likes: (comments[postId]?.find((c) => c.id === id)?.likes || 0) + 1,
-        }),
+        body: JSON.stringify({ likes: updatedLikes }),
       })
+
       const data = await response.json()
       console.log("수정된 댓글 데이터", data)
 
       setComments((prev) => ({
         ...prev,
-        [postId]: prev[postId].map((comment) => (comment.id === data.id ? data : comment)),
+        [postId]: prev[postId].map((comment) =>
+          comment.id === data.id ? { ...comment, likes: updatedLikes } : comment,
+        ),
       }))
       console.log("해당 postId 댓글 목록", comments[postId])
     } catch (error) {
@@ -409,7 +415,11 @@ const PostsManager = () => {
         <Button
           size="sm"
           onClick={() => {
-            setNewComment((prev) => ({ ...prev, postId }))
+            setNewComment({
+              body: "",
+              postId,
+              userId: 1,
+            }) // ✅ body, postId, userId 모두 명시
             setShowAddCommentDialog(true)
           }}
         >

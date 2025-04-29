@@ -7,12 +7,16 @@ interface CommentState {
   selectedComment: IComment | null
   loading: boolean
   newComment: {
-    content: string
+    body: string
     postId: number
     userId: number
   }
 
-  setComments: (updater: ((comments: { [postId: number]: IComment[] }) => { [postId: number]: IComment[] }) | { [postId: number]: IComment[] }) => void
+  setComments: (
+    updater:
+      | ((comments: { [postId: number]: IComment[] }) => { [postId: number]: IComment[] })
+      | { [postId: number]: IComment[] },
+  ) => void
   setLoading: (loading: boolean) => void
   setNewComment: (comment: { body: string; postId: number; userId: number }) => void
   setSelectedComment: (comment: IComment | null) => void
@@ -25,7 +29,7 @@ export const useCommentStore = create(
       selectedComment: null,
       loading: false,
       newComment: {
-        content: "",
+        body: "",
         postId: 0,
         userId: 0,
       },
@@ -36,7 +40,8 @@ export const useCommentStore = create(
         })),
       setSelectedComment: (comment: IComment | null) => set({ selectedComment: comment }),
       setLoading: (loading: boolean) => set({ loading }),
-      setNewComment: (comment) => set({ newComment: { content: comment.body, postId: comment.postId, userId: comment.userId } }),
+      setNewComment: (comment) =>
+        set({ newComment: { body: comment.body, postId: comment.postId, userId: comment.userId } }),
     }),
     { name: "CommentStore" },
   ),
