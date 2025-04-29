@@ -41,7 +41,7 @@ export const PostTable = ({
           <TableCell>{post.id}</TableCell>
           <TableCell>
             <div className="space-y-1">
-              <div>{highlightText(post.title, searchQuery)}</div>
+              <div>{post.title && highlightText(post.title, searchQuery)}</div>
 
               <div className="flex flex-wrap gap-1">
                 {post.tags?.map((tag) => (
