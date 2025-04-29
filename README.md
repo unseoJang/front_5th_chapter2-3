@@ -28,31 +28,29 @@
 전역상태관리를 이용한 적절한 분리와 계층에 대한 이해를 통한 FSD 폴더 구조 적용하기
 
 - 전역상태관리를 사용해서 상태를 분리하고 관리하는 방법에 대한 이해
- - Context API, Jotai, Zustand 등 상태관리 라이브러리 사용하기
+- Context API, Jotai, Zustand 등 상태관리 라이브러리 사용하기
 
 - FSD(Feature-Sliced Design)에 대한 이해
 
 - FSD를 통한 관심사의 분리에 대한 이해
- - 단일책임과 역할이란 무엇인가?
- - 관심사를 하나만 가지고 있는가?
- - 어디에 무엇을 넣어야 하는가?
-
+- 단일책임과 역할이란 무엇인가?
+- 관심사를 하나만 가지고 있는가?
+- 어디에 무엇을 넣어야 하는가?
 
 체크포인트
+
 - [ ] 전역상태관리를 사용해서 상태를 분리하고 관리했나요?
 - [ ] Props Drilling을 최소화했나요?
 - [ ] shared 공통 컴포넌트를 분리했나요?
 - [ ] shared 공통 로직을 분리했나요?
 - [ ] entities를 중심으로 type을 정의하고 model을 분리했나요?
-- [ ] entities를 중심으로 ui를 분리했나요?
+- [x] entities를 중심으로 ui를 분리했나요?
 - [ ] entities를 중심으로 api를 분리했나요?
-- [ ] feature를 중심으로 사용자행동(이벤트 처리)를 분리했나요?
+- [x] feature를 중심으로 사용자행동(이벤트 처리)를 분리했나요?
 - [ ] feature를 중심으로 ui를 분리했나요?
 - [ ] feature를 중심으로 api를 분리했나요?
 - [ ] widget을 중심으로 데이터를 재사용가능한 형태로 분리했나요?
 ```
-
-
 
 # [6주차] 심화과제
 
@@ -69,13 +67,14 @@ TanstackQuery를 이용하여 코드를 개선하기
 
 ```markdown
 목표:
-서버상태관리 도구인 TanstackQuery를 이용하여 비동기코드를 선언적인 함수형 프로그래밍으로 작성하기 
+서버상태관리 도구인 TanstackQuery를 이용하여 비동기코드를 선언적인 함수형 프로그래밍으로 작성하기
 
 - TanstackQuery의 사용법에 대한 이해
 - TanstackQuery를 이용한 비동기 코드 작성에 대한 이해
 - 비동기 코드를 선언적인 함수형 프로그래밍으로 작성하는 방법에 대한 이해
 
 체크포인트
+
 - [ ] 모든 API 호출이 TanStack Query의 useQuery와 useMutation으로 대체되었는가?
 - [ ] 쿼리 키가 적절히 설정되었는가?
 - [ ] fetch와 useState가 아닌 선언적인 함수형 프로그래밍이 적절히 적용되었는가?
@@ -86,10 +85,10 @@ TanstackQuery를 이용하여 코드를 개선하기
 [x] 1. 상태관리 설치
 [x] 2. shared > ui 공통 컴포넌트 UI 분리
 [x] 3. 타입 먼저 정리
-[] 4. PostsManager.tsx 에서 useState → zustand로 전부 교체
-[] 5. PostTable.tsx 컴포넌트 분리해서 게시글 테이블 UI 옮김
-[] 6. PostFilters.tsx 컴포넌트 분리해서 검색/필터 드롭다운 옮김
-[] 7. PostDialogs.tsx 컴포넌트 분리해서 게시글 추가/수정 다이얼로그 옮김
+[x] 4. PostsManager.tsx 에서 useState → zustand로 전부 교체
+[x] 5. PostTable.tsx 컴포넌트 분리해서 게시글 테이블 UI 옮김
+[x] 6. PostFilters.tsx 컴포넌트 분리해서 검색/필터 드롭다운 옮김
+[x] 7. PostDialogs.tsx 컴포넌트 분리해서 게시글 추가/수정 다이얼로그 옮김
 [] 8. CommentList.tsx 컴포넌트 분리해서 댓글 리스트/관리 옮김
 [] 9. UserModal.tsx 컴포넌트 분리해서 유저 정보 모달 옮김
 [] 10. API 호출 함수들은 postApi.ts, commentApi.ts로 분리

@@ -8,19 +8,25 @@ interface ITestPosts {
 }
 
 interface IPosts {
+  author: Author
   id?: number
-  title: string
-  body: string
+  title?: string
+  body?: string
   tags?: string[]
   reactions?: {
     likes: number
     dislikes: number
   }
   views?: number
-  userId: number
+  userId?: number
   authorId: string
   authorImage?: string
   authorUsername?: string
+}
+
+interface Author {
+  image: string
+  username: string
 }
 
 interface IPostWithAuthor extends IPosts {
@@ -30,6 +36,7 @@ interface IPostWithAuthor extends IPosts {
 interface ITags {
   slug: string
   tags: string[]
+  url?: string
 }
 
 export type { IPosts, IPostWithAuthor, ITestPosts, ITags }
