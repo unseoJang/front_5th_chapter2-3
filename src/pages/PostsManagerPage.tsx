@@ -29,10 +29,11 @@ import { useCommentStore } from "@/entities/comment/model/commentStore"
 import { PostTable } from "@/entities/post/ui/PostTable"
 import { useUserStore } from "@/entities/user/model/userStore"
 
-// lib
-import { highlightText } from "@/shared/lib/highlightText"
+// components
+// import { highlightText } from "@/shared/lib/highlightText"
 import PostFilters from "@/entities/post/ui/PostFilters"
 import PostDialogs from "@/entities/post/ui/PostDialogs"
+import CommentList from "@/entities/comment/ui/commentList"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -102,9 +103,9 @@ const PostsManager = () => {
     showUserModal,
     setShowUserModal,
   } = usePostStore()
-  const { users, selectedUser, loading: userLoading } = useUserStore()
+  const { users, selectedUser, setSelectedUser, loading: userLoading } = useUserStore()
 
-  const { comments, selectedComment, newComment, setComments, setNewComment } = useCommentStore()
+  const { comments, selectedComment, newComment, setComments, setNewComment, setSelectedComment } = useCommentStore()
   // URL 업데이트 함수
   const updateURL = () => {
     const params = new URLSearchParams()
@@ -408,56 +409,77 @@ const PostsManager = () => {
   )
 
   // 댓글 렌더링
-  const renderComments = (postId: number) => (
-    <div className="mt-2">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold">댓글</h3>
-        <Button
-          size="sm"
-          onClick={() => {
-            setNewComment({
-              body: "",
-              postId,
-              userId: 1,
-            }) // ✅ body, postId, userId 모두 명시
-            setShowAddCommentDialog(true)
-          }}
-        >
-          <Plus className="w-3 h-3 mr-1" />
-          댓글 추가
-        </Button>
-      </div>
-      <div className="space-y-1">
-        {comments[postId]?.map((comment) => (
-          <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
-            <div className="flex items-center space-x-2 overflow-hidden">
-              <span className="font-medium truncate">{comment.user?.username}:</span>
-              <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" onClick={() => comment.id && likeComment(comment.id, postId)}>
-                <ThumbsUp className="w-3 h-3" />
-                <span className="ml-1 text-xs">{comment.likes}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedComment(comment)
-                  setShowEditCommentDialog(true)
-                }}
-              >
-                <Edit2 className="w-3 h-3" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => comment.id && deleteComment(comment.id, postId)}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+  // const renderComments = (postId: number) => (
+  //   <div className="mt-2">
+  //     <div className="flex items-center justify-between mb-2">
+  //       <h3 className="text-sm font-semibold">댓글</h3>
+  //       <Button
+  //         size="sm"
+  //         onClick={() => {
+  //           setNewComment({
+  //             body: "",
+  //             postId,
+  //             userId: 1,
+  //           }) // ✅ body, postId, userId 모두 명시
+  //           setShowAddCommentDialog(true)
+  //         }}
+  //       >
+  //         <Plus className="w-3 h-3 mr-1" />
+  //         댓글 추가
+  //       </Button>
+  //     </div>
+  //     <div className="space-y-1">
+  //       {comments[postId]?.map((comment) => (
+  //         <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
+  //           <div className="flex items-center space-x-2 overflow-hidden">
+  //             <span className="font-medium truncate">{comment.user?.username}:</span>
+  //             <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
+  //           </div>
+  //           <div className="flex items-center space-x-1">
+  //             <Button variant="ghost" size="sm" onClick={() => comment.id && likeComment(comment.id, postId)}>
+  //               <ThumbsUp className="w-3 h-3" />
+  //               <span className="ml-1 text-xs">{comment.likes}</span>
+  //             </Button>
+  //             <Button
+  //               variant="ghost"
+  //               size="sm"
+  //               onClick={() => {
+  //                 setSelectedComment(comment)
+  //                 setShowEditCommentDialog(true)
+  //               }}
+  //             >
+  //               <Edit2 className="w-3 h-3" />
+  //             </Button>
+  //             <Button variant="ghost" size="sm" onClick={() => comment.id && deleteComment(comment.id, postId)}>
+  //               <Trash2 className="w-3 h-3" />
+  //             </Button>
+  //           </div>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   </div>
+  // )
+
+  // 댓글 렌더링
+  const renderComments = (postId: number) => {
+    return (
+      <CommentList
+        postId={postId}
+        comments={comments[postId] || []}
+        searchQuery={searchQuery}
+        onLikeComment={likeComment}
+        onEditComment={(comment) => {
+          setSelectedComment(comment)
+          setShowEditCommentDialog(true)
+        }}
+        onDeleteComment={deleteComment}
+        onAddComment={(postId) => {
+          setNewComment({ body: "", postId, userId: 1 })
+          setShowAddCommentDialog(true)
+        }}
+      />
+    )
+  }
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
