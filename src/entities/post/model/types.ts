@@ -9,15 +9,15 @@ interface ITestPosts {
 
 interface IPosts {
   id?: number
-  title: string
-  body: string
+  title?: string
+  body?: string
   tags?: string[]
   reactions?: {
     likes: number
     dislikes: number
   }
   views?: number
-  userId: number
+  userId?: number
   authorId: string
   authorImage?: string
   authorUsername?: string
