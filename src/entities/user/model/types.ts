@@ -15,8 +15,6 @@ interface IUser {
   gender: string
   email: string
   image: string
-<<<<<<< HEAD
-=======
   phone: string
   address: {
     address: string
@@ -39,7 +37,6 @@ interface IUser {
     country: string
     postalCode: string
   }
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
 }
 
 export type { IUser, ITestUsers }

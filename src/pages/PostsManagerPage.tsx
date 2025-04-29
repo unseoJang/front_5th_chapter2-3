@@ -1,9 +1,5 @@
 import { useEffect } from "react"
-<<<<<<< HEAD
-import { Edit2, Plus, Search, ThumbsUp, Trash2 } from "lucide-react"
-=======
 import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
 import { useLocation, useNavigate } from "react-router-dom"
 import {
   Button,
@@ -24,25 +20,12 @@ import {
 } from "../shared/ui"
 
 // types
-<<<<<<< HEAD
-import type { IPosts, ITags, ITestPosts } from "../entities/post/model/types"
-import type { ITestUsers, IUser } from "../entities/user/model/types"
-import type { IComment, ITestComments } from "../entities/comment/model/types"
-=======
 import type { IPosts, ITestPosts } from "../entities/post/model/types"
 import type { ITestUsers, IUser } from "../entities/user/model/types"
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
 
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
 import { useCommentStore } from "@/entities/comment/model/commentStore"
-<<<<<<< HEAD
-import { PostTable } from "@/entities/user/ui/PostTable"
-import { useUserStore } from "@/entities/user/model/userStore"
-
-// lib
-import { highlightText } from "@/shared/lib/highlightText"
-=======
 import { PostTable } from "@/entities/post/ui/PostTable"
 import { useUserStore } from "@/entities/user/model/userStore"
 
@@ -51,7 +34,6 @@ import { useUserStore } from "@/entities/user/model/userStore"
 import PostFilters from "@/entities/post/ui/PostFilters"
 import PostDialogs from "@/entities/post/ui/PostDialogs"
 import CommentList from "@/entities/comment/ui/commentList"
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -121,15 +103,9 @@ const PostsManager = () => {
     showUserModal,
     setShowUserModal,
   } = usePostStore()
-<<<<<<< HEAD
-  const { users, selectedUser, loading: userLoading } = useUserStore()
-
-  const { comments, selectedComment, newComment, setComments, setNewComment } = useCommentStore()
-=======
   const { users, selectedUser, setSelectedUser, loading: userLoading } = useUserStore()
 
   const { comments, selectedComment, newComment, setComments, setNewComment, setSelectedComment } = useCommentStore()
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
   // URL 업데이트 함수
   const updateURL = () => {
     const params = new URLSearchParams()
@@ -346,14 +322,6 @@ const PostsManager = () => {
   // 댓글 좋아요
   const likeComment = async (id: number, postId: number) => {
     try {
-<<<<<<< HEAD
-      const response = await fetch(`/api/comments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          likes: (comments[postId]?.find((c) => c.id === id)?.likes || 0) + 1,
-        }),
-=======
       const oldComment = comments[postId]?.find((c) => c.id === id)
       if (!oldComment) return
 
@@ -363,7 +331,6 @@ const PostsManager = () => {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ likes: updatedLikes }),
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
       })
 
       const data = await response.json()
@@ -371,13 +338,9 @@ const PostsManager = () => {
 
       setComments((prev) => ({
         ...prev,
-<<<<<<< HEAD
-        [postId]: prev[postId].map((comment) => (comment.id === data.id ? data : comment)),
-=======
         [postId]: prev[postId].map((comment) =>
           comment.id === data.id ? { ...comment, likes: updatedLikes } : comment,
         ),
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
       }))
       console.log("해당 postId 댓글 목록", comments[postId])
     } catch (error) {
@@ -446,54 +409,6 @@ const PostsManager = () => {
   )
 
   // 댓글 렌더링
-<<<<<<< HEAD
-  const renderComments = (postId: number) => (
-    <div className="mt-2">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold">댓글</h3>
-        <Button
-          size="sm"
-          onClick={() => {
-            setNewComment((prev) => ({ ...prev, postId }))
-            setShowAddCommentDialog(true)
-          }}
-        >
-          <Plus className="w-3 h-3 mr-1" />
-          댓글 추가
-        </Button>
-      </div>
-      <div className="space-y-1">
-        {comments[postId]?.map((comment) => (
-          <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
-            <div className="flex items-center space-x-2 overflow-hidden">
-              <span className="font-medium truncate">{comment.user?.username}:</span>
-              <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" onClick={() => comment.id && likeComment(comment.id, postId)}>
-                <ThumbsUp className="w-3 h-3" />
-                <span className="ml-1 text-xs">{comment.likes}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedComment(comment)
-                  setShowEditCommentDialog(true)
-                }}
-              >
-                <Edit2 className="w-3 h-3" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => comment.id && deleteComment(comment.id, postId)}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-=======
   // const renderComments = (postId: number) => (
   //   <div className="mt-2">
   //     <div className="flex items-center justify-between mb-2">
@@ -565,7 +480,6 @@ const PostsManager = () => {
       />
     )
   }
->>>>>>> 09efc2cdc58dda6dcc0f9fa55c4aab299eaf096e
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
