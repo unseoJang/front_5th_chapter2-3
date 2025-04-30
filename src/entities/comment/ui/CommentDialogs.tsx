@@ -1,6 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Textarea, Button } from "@/shared/ui"
 import type { IComment } from "@/entities/comment/model/types"
 
+import { useAddComment } from "@/entities/comment/hooks/useAddComment"
+
 interface CommentDialogsProps {
   showAddDialog: boolean
   setShowAddDialog: (open: boolean) => void
@@ -10,7 +12,6 @@ interface CommentDialogsProps {
   selectedComment: IComment | null
   onChangeNewComment: (body: string) => void
   onChangeSelectedComment: (body: string) => void
-  onAddComment: () => void
   onUpdateComment: () => void
 }
 
@@ -23,9 +24,14 @@ const CommentDialogs = ({
   selectedComment,
   onChangeNewComment,
   onChangeSelectedComment,
-  onAddComment,
   onUpdateComment,
 }: CommentDialogsProps) => {
+  const { mutate: addComment } = useAddComment({
+    onSuccess: () => {
+      setShowAddDialog(false)
+      onChangeNewComment("")
+    },
+  })
   return (
     <>
       {/* 댓글 추가 대화상자 */}
@@ -40,7 +46,14 @@ const CommentDialogs = ({
               value={newComment.body}
               onChange={(e) => onChangeNewComment(e.target.value)}
             />
-            <Button onClick={onAddComment}>댓글 추가</Button>
+            <Button
+              onClick={() => {
+                console.log("📦 보내는 newComment", newComment)
+                addComment(newComment)
+              }}
+            >
+              댓글 추가
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

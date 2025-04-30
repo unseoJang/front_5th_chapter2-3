@@ -39,4 +39,11 @@ interface ITags {
   url?: string
 }
 
-export type { IPosts, IPostWithAuthor, ITestPosts, ITags }
+interface IPostResponse {
+  posts: IPosts[]
+  total: number
+  skip: number
+  limit: number
+}
+
+export type { IPosts, IPostWithAuthor, ITestPosts, ITags, IPostResponse }

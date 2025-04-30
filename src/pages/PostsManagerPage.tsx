@@ -235,24 +235,24 @@ const PostsManager = () => {
   }
 
   // 댓글 추가
-  const addComment = async () => {
-    try {
-      const response = await fetch("/api/comments/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newComment),
-      })
-      const data = await response.json()
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: [...(prev[data.postId] || []), data],
-      }))
-      setShowAddCommentDialog(false)
-      setNewComment({ body: "", postId: 0, userId: 1 })
-    } catch (error) {
-      console.error("댓글 추가 오류:", error)
-    }
-  }
+  // const addComment = async () => {
+  //   try {
+  //     const response = await fetch("/api/comments/add", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(newComment),
+  //     })
+  //     const data = await response.json()
+  //     setComments((prev) => ({
+  //       ...prev,
+  //       [data.postId]: [...(prev[data.postId] || []), data],
+  //     }))
+  //     setShowAddCommentDialog(false)
+  //     setNewComment({ body: "", postId: 0, userId: 1 })
+  //   } catch (error) {
+  //     console.error("댓글 추가 오류:", error)
+  //   }
+  // }
 
   // 댓글 업데이트
   const updateComment = async () => {
@@ -480,7 +480,7 @@ const PostsManager = () => {
       />
 
       {/* 댓글 대화상자 */}
-      <CommentDialogs
+      {/* <CommentDialogs
         showAddDialog={showAddCommentDialog}
         setShowAddDialog={setShowAddCommentDialog}
         showEditDialog={showEditCommentDialog}
@@ -490,6 +490,17 @@ const PostsManager = () => {
         onChangeNewComment={(body) => setNewComment((prev) => ({ ...prev, body }))}
         onChangeSelectedComment={(body) => selectedComment && setSelectedComment({ ...selectedComment, body })}
         onAddComment={addComment}
+        onUpdateComment={updateComment}
+      /> */}
+      <CommentDialogs
+        showAddDialog={showAddCommentDialog}
+        setShowAddDialog={setShowAddCommentDialog}
+        showEditDialog={showEditCommentDialog}
+        setShowEditDialog={setShowEditCommentDialog}
+        newComment={newComment}
+        selectedComment={selectedComment}
+        onChangeNewComment={(body) => setNewComment((prev) => ({ ...prev, body }))}
+        onChangeSelectedComment={(body) => selectedComment && setSelectedComment({ ...selectedComment, body })}
         onUpdateComment={updateComment}
       />
 
