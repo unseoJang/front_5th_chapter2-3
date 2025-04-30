@@ -91,5 +91,8 @@ TanstackQuery를 이용하여 코드를 개선하기
 [x] 7. PostDialogs.tsx 컴포넌트 분리해서 게시글 추가/수정 다이얼로그 옮김
 [x] 8. CommentList.tsx 컴포넌트 분리해서 댓글 리스트/관리 옮김
 [x] 9. UserModal.tsx 컴포넌트 분리해서 유저 정보 모달 옮김
-[] 10. API 호출 함수들은 postApi.ts, commentApi.ts로 분리
+[] 10. API 호출 함수들은 postApi.ts, commentApi.ts로 분리 -> entities/api/ 분리 + React Query 적용
+[] 11. shared/lib에 유틸성 함수 더 추가
+[] 12. feature/ui, feature/api 폴더로 실제 유저 행동 단위 컴포넌트/로직 옮기기
+[] 13. widgets 폴더 구조 설계 (예: PostWidget, CommentSection 등)
 [] 11. 최종적으로 PostManager.tsx는 위 컴포넌트들을 조립하는 코드만 남긴다
