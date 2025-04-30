@@ -15,8 +15,8 @@ import {
 } from "../shared/ui"
 
 // types
-import type { IPosts, ITestPosts } from "../entities/post/model/types"
-import type { ITestUsers, IUser } from "../entities/user/model/types"
+import type { IPosts } from "../entities/post/model/types"
+import type { IUser } from "../entities/user/model/types"
 
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
@@ -31,6 +31,9 @@ import CommentList from "@/entities/comment/ui/CommentList"
 import UserModal from "@/entities/user/ui/UserModal"
 import CommentDialogs from "@/entities/comment/ui/CommentDialogs"
 import { usePosts } from "@/entities/post/hooks/usePosts"
+import { usePostTags } from "@/entities/post/hooks/usePostTags"
+import { usePostByTag } from "@/entities/post/hooks/usePostByTag"
+import { useSearchPosts } from "@/entities/post/hooks/useSearchPosts"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -56,7 +59,6 @@ const PostsManager = () => {
     setSortBy,
     setSortOrder,
     setSelectedTag,
-    setLoading,
     showEditDialog,
     setShowEditDialog,
     total,
@@ -74,7 +76,7 @@ const PostsManager = () => {
     showUserModal,
     setShowUserModal,
   } = usePostStore()
-  const { selectedUser, setSelectedUser, loading: userLoading } = useUserStore()
+  const { selectedUser, setSelectedUser } = useUserStore()
 
   const { comments, selectedComment, newComment, setComments, setNewComment, setSelectedComment } = useCommentStore()
   // URL 업데이트 함수
@@ -93,62 +95,57 @@ const PostsManager = () => {
   const { data: postData, isLoading } = usePosts(limit, skip)
 
   // 태그 가져오기
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("/api/posts/tags")
-      const data = await response.json()
-      setTags(data)
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error)
-    }
-  }
+  const { data: tagData } = usePostTags()
 
   // 게시물 검색
-  const searchPosts = async () => {
-    if (!searchQuery) {
-      // fetchPosts()
-      setPosts(postData?.posts || [])
-      return
-    }
-    setLoading(true)
-    try {
-      const response = await fetch(`/api/posts/search?q=${searchQuery}`)
-      const data = await response.json()
-      setPosts(data.posts)
-      setTotal(data.total)
-    } catch (error) {
-      console.error("게시물 검색 오류:", error)
-    }
-    setLoading(false)
-  }
+  const { data: searchPostsData } = useSearchPosts(searchQuery)
+  // const searchPosts = async () => {
+  //   if (!searchQuery) {
+  //     // fetchPosts()
+  //     setPosts(postData?.posts || [])
+  //     return
+  //   }
+  //   setLoading(true)
+  //   try {
+  //     const response = await fetch(`/api/posts/search?q=${searchQuery}`)
+  //     const data = await response.json()
+  //     setPosts(data.posts)
+  //     setTotal(data.total)
+  //   } catch (error) {
+  //     console.error("게시물 검색 오류:", error)
+  //   }
+  //   setLoading(false)
+  // }
 
   // 태그별 게시물 가져오기
-  const fetchPostsByTag = async (tag: string) => {
-    if (!tag || tag === "all") {
-      fetchPosts()
-      return
-    }
-    setLoading(true)
-    try {
-      const [postsResponse, usersResponse] = await Promise.all([
-        fetch(`/api/posts/tag/${tag}`),
-        fetch("/api/users?limit=0&select=username,image"),
-      ])
-      const postsData = await postsResponse.json()
-      const usersData = await usersResponse.json()
+  const { data: postsByTagData } = usePostByTag(selectedTag)
 
-      const postsWithUsers = postsData.posts.map((post: IPosts) => ({
-        ...post,
-        author: usersData.users.find((user: IUser) => user.id === post.userId),
-      }))
+  // const fetchPostsByTag = async (tag: string) => {
+  //   if (!tag || tag === "all") {
+  //     fetchPosts()
+  //     return
+  //   }
+  //   setLoading(true)
+  //   try {
+  //     const [postsResponse, usersResponse] = await Promise.all([
+  //       fetch(`/api/posts/tag/${tag}`),
+  //       fetch("/api/users?limit=0&select=username,image"),
+  //     ])
+  //     const postsData = await postsResponse.json()
+  //     const usersData = await usersResponse.json()
 
-      setPosts(postsWithUsers)
-      setTotal(postsData.total)
-    } catch (error) {
-      console.error("태그별 게시물 가져오기 오류:", error)
-    }
-    setLoading(false)
-  }
+  //     const postsWithUsers = postsData.posts.map((post: IPosts) => ({
+  //       ...post,
+  //       author: usersData.users.find((user: IUser) => user.id === post.userId),
+  //     }))
+
+  //     setPosts(postsWithUsers)
+  //     setTotal(postsData.total)
+  //   } catch (error) {
+  //     console.error("태그별 게시물 가져오기 오류:", error)
+  //   }
+  //   setLoading(false)
+  // }
 
   // 게시물 추가
   const addPost = async () => {
@@ -313,19 +310,26 @@ const PostsManager = () => {
   }
 
   useEffect(() => {
-    fetchTags()
-  }, [])
+    if (tagData) setTags(tagData)
+  }, [setTags, tagData])
 
   useEffect(() => {
-    if (selectedTag) {
-      fetchPostsByTag(selectedTag)
+    if (searchQuery.trim()) {
+      // 🔍 검색어가 있을 때
+      setPosts(searchPostsData?.posts || [])
+      setTotal(searchPostsData?.total || 0)
+    } else if (selectedTag && selectedTag !== "all") {
+      // 🏷️ 태그 선택만 있을 때
+      setPosts(postsByTagData?.posts || [])
+      setTotal(postsByTagData?.total || 0)
     } else if (postData) {
+      // 📋 기본 게시물 리스트
       setPosts(postData.posts)
       setTotal(postData.total)
     }
 
     updateURL()
-  }, [selectedTag, postData])
+  }, [searchQuery, selectedTag, postData, postsByTagData, searchPostsData])
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -398,12 +402,17 @@ const PostsManager = () => {
             onChangeSearchQuery={setSearchQuery}
             onChangeTag={(value) => {
               setSelectedTag(value)
-              fetchPostsByTag(value)
+              // fetchPostsByTag(value)
+              setPosts(postsByTagData?.posts || [])
               updateURL()
             }}
             onChangeSortBy={setSortBy}
             onChangeSortOrder={setSortOrder}
-            onSearch={searchPosts}
+            // onSearch={searchPosts}
+            onSearch={() => {
+              setPosts(searchPostsData?.posts || [])
+              setTotal(searchPostsData?.total || 0)
+            }}
           />
 
           {/* 게시물 테이블 */}

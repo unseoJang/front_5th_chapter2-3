@@ -1,21 +1,7 @@
 // entities/post/api/postApi.ts
 import { IPosts, ITestPosts } from "@/entities/post/model/types"
-import type { IPostResponse } from "../model/types"
-import { ITestUsers } from "@/entities/user/model/types"
-
-/**
- * 게시물 가져오기
- * @param limit
- * @param skip
- * @returns
- */
-// export const fetchPosts = async (limit: number, skip: number) => {
-//   const res = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-//   if (!res.ok) {
-//     throw new Error("Failed to fetch posts")
-//   }
-//   return res.json() as Promise<ITestPosts>
-// }
+import type { IPostResponse, ITags } from "../model/types"
+import { IUser } from "@/entities/user/model/types"
 
 /**
  * 게시물 가져오기
@@ -50,22 +36,38 @@ export const fetchPosts = async (limit: number, skip: number): Promise<ITestPost
 /**
  * 태그별 게시물 가져오기
  * @param tag
+ * @param limit
+ * @param skip
  * @returns
  */
-export const fetchPostsByTag = async (tag: string) => {
-  const res = await fetch(`/api/posts/tag/${tag}`)
-  if (!res.ok) {
-    throw new Error("Failed to fetch posts by tag")
+export const fetchPostsByTag = async (tag: string): Promise<ITestPosts> => {
+  const postRes = await fetch(`/api/posts/tag/${tag}`)
+  if (!postRes.ok) throw new Error("Failed to fetch posts by tag")
+  const postsData = await postRes.json()
+
+  const userRes = await fetch("/api/users?limit=0&select=username,image")
+  if (!userRes.ok) throw new Error("Failed to fetch users")
+  const usersData = await userRes.json()
+
+  const postsWithAuthors = postsData.posts.map((post: IPosts) => ({
+    ...post,
+    author: usersData.users.find((user: IUser) => user.id === post.userId),
+  }))
+
+  return {
+    posts: postsWithAuthors,
+    total: postsData.total,
+    skip: postsData.skip,
+    limit: postsData.limit,
   }
-  return res.json() as Promise<ITestPosts>
 }
 
 /**
  * 게시물 검색
- * @param query
+ * @param searchQuery
  */
-export const searchPosts = async (query: string): Promise<IPostResponse> => {
-  const res = await fetch(`/api/posts/search?q=${query}`)
+export const fetchSearchPosts = async (searchQuery: string): Promise<IPostResponse> => {
+  const res = await fetch(`/api/posts/search?q=${searchQuery}`)
   if (!res.ok) {
     throw new Error("Failed to search posts")
   }
@@ -110,4 +112,14 @@ export const deletePost = async (id: number) => {
 
   if (!res.ok) throw new Error("Failed to delete post")
   return res.json() as Promise<IPosts>
+}
+
+/**
+ * 태그 가져오기
+ * @returns
+ */
+export const fetchTags = async () => {
+  const res = await fetch("/api/posts/tags")
+  if (!res.ok) throw new Error("Failed to fetch tags")
+  return res.json() as Promise<ITags[]>
 }
