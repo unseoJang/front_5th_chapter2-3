@@ -30,6 +30,7 @@ import PostDialogs from "@/entities/post/ui/PostDialogs"
 import CommentList from "@/entities/comment/ui/CommentList"
 import UserModal from "@/entities/user/ui/UserModal"
 import CommentDialogs from "@/entities/comment/ui/CommentDialogs"
+import { usePosts } from "@/entities/post/hooks/usePosts"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -46,7 +47,6 @@ const PostsManager = () => {
     sortBy,
     sortOrder,
     selectedTag,
-    loading,
     setPosts,
     setSelectedPost,
     setTags,
@@ -90,34 +90,7 @@ const PostsManager = () => {
   }
 
   // 게시물 가져오기
-  const fetchPosts = () => {
-    setLoading(true)
-    let postsData: ITestPosts
-    let usersData: ITestUsers
-
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-      .then((response) => response.json())
-      .then((data) => {
-        postsData = data
-        return fetch("/api/users?limit=0&select=username,image")
-      })
-      .then((response) => response.json())
-      .then((users) => {
-        usersData = users.users // <-- 여기 중요! data.users로 고쳐야 돼
-        const postsWithUsers = postsData.posts.map((post) => ({
-          ...post,
-          author: usersData.find((user: { id: number }) => user.id === post.userId),
-        }))
-        setPosts(postsWithUsers)
-        setTotal(postsData.total)
-      })
-      .catch((error) => {
-        console.error("게시물 가져오기 오류:", error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
+  const { data: postData, isLoading } = usePosts(limit, skip)
 
   // 태그 가져오기
   const fetchTags = async () => {
@@ -133,7 +106,8 @@ const PostsManager = () => {
   // 게시물 검색
   const searchPosts = async () => {
     if (!searchQuery) {
-      fetchPosts()
+      // fetchPosts()
+      setPosts(postData?.posts || [])
       return
     }
     setLoading(true)
@@ -223,16 +197,16 @@ const PostsManager = () => {
   }
 
   // 댓글 가져오기
-  const fetchComments = async (postId: number) => {
-    if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
-    try {
-      const response = await fetch(`/api/comments/post/${postId}`)
-      const data = await response.json()
-      setComments((prev) => ({ ...prev, [postId]: data.comments }))
-    } catch (error) {
-      console.error("댓글 가져오기 오류:", error)
-    }
-  }
+  // const fetchComments = async (postId: number) => {
+  //   if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
+  //   try {
+  //     const response = await fetch(`/api/comments/post/${postId}`)
+  //     const data = await response.json()
+  //     setComments((prev) => ({ ...prev, [postId]: data.comments }))
+  //   } catch (error) {
+  //     console.error("댓글 가져오기 오류:", error)
+  //   }
+  // }
 
   // 댓글 추가
   // const addComment = async () => {
@@ -322,7 +296,7 @@ const PostsManager = () => {
   const openPostDetail = (post: IPosts) => {
     if (!post.id) return
     setSelectedPost(post)
-    fetchComments(post.id)
+    // fetchComments(post.id)
     setShowPostDetailDialog(true)
   }
 
@@ -345,11 +319,13 @@ const PostsManager = () => {
   useEffect(() => {
     if (selectedTag) {
       fetchPostsByTag(selectedTag)
-    } else {
-      fetchPosts()
+    } else if (postData) {
+      setPosts(postData.posts)
+      setTotal(postData.total)
     }
+
     updateURL()
-  }, [skip, limit, sortBy, sortOrder, selectedTag])
+  }, [selectedTag, postData])
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -383,7 +359,7 @@ const PostsManager = () => {
     return (
       <CommentList
         postId={postId}
-        comments={comments[postId] || []}
+        // comments={comments[postId] || []}
         searchQuery={searchQuery}
         onLikeComment={likeComment}
         onEditComment={(comment) => {
@@ -431,7 +407,7 @@ const PostsManager = () => {
           />
 
           {/* 게시물 테이블 */}
-          {loading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
+          {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
 
           {/* 페이지네이션 */}
           <div className="flex justify-between items-center">

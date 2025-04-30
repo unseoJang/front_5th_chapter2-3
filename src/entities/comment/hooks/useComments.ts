@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { fetchComments } from "../api/commentApi"
+import { fetchComments } from "@/entities/comment/api/commentApi"
 import { IComment } from "../model/types"
 
 export const useComments = (postId: number) => {

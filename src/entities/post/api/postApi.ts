@@ -1,6 +1,7 @@
 // entities/post/api/postApi.ts
 import { IPosts, ITestPosts } from "@/entities/post/model/types"
 import type { IPostResponse } from "../model/types"
+import { ITestUsers } from "@/entities/user/model/types"
 
 /**
  * 게시물 가져오기
@@ -8,12 +9,42 @@ import type { IPostResponse } from "../model/types"
  * @param skip
  * @returns
  */
-export const fetchPosts = async (limit: number, skip: number) => {
-  const res = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-  if (!res.ok) {
-    throw new Error("Failed to fetch posts")
+// export const fetchPosts = async (limit: number, skip: number) => {
+//   const res = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
+//   if (!res.ok) {
+//     throw new Error("Failed to fetch posts")
+//   }
+//   return res.json() as Promise<ITestPosts>
+// }
+
+/**
+ * 게시물 가져오기
+ * @param limit
+ * @param skip
+ * @returns
+ */
+export const fetchPosts = async (limit: number, skip: number): Promise<ITestPosts> => {
+  const postRes = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
+  if (!postRes.ok) throw new Error("Failed to fetch posts")
+  const postsData = await postRes.json()
+
+  const userRes = await fetch("/api/users?limit=0&select=username,image")
+  if (!userRes.ok) throw new Error("Failed to fetch users")
+  const usersData = await userRes.json()
+
+  const postsWithAuthors = await Promise.all(
+    postsData.posts.map(async (post: IPosts) => ({
+      ...post,
+      author: usersData.users.find((user: { id: number }) => user.id === post.userId),
+    })),
+  )
+
+  return {
+    posts: postsWithAuthors,
+    total: postsData.total,
+    skip,
+    limit,
   }
-  return res.json() as Promise<ITestPosts>
 }
 
 /**
