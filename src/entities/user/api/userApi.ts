@@ -1,8 +1,13 @@
-import { getBaseUrl } from "@/shared/lib/getBaseUrl"
+// entities/user/api/userApi.ts
 import { IUser } from "../model/types"
+import { axiosInstance } from "@/shared/lib/axiosInstance"
 
-export const fetchUserInfo = async (userId: number) => {
-  const res = await fetch(`${getBaseUrl()}/users/${userId}`)
-  if (!res.ok) throw new Error("Failed to fetch user")
-  return res.json() as Promise<IUser>
+/**
+ * 사용자 정보 가져오기
+ * @param userId
+ * @returns
+ */
+export const fetchUserInfo = async (userId: number): Promise<IUser> => {
+  const { data } = await axiosInstance.get(`/users/${userId}`)
+  return data as IUser
 }

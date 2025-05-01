@@ -1,28 +1,24 @@
+// entities/post/api/postApi.ts
 import { IPosts, ITestPosts, IPostResponse, ITags } from "@/entities/post/model/types"
 import { IUser } from "@/entities/user/model/types"
-import { getBaseUrl } from "@/shared/lib/getBaseUrl"
+import { axiosInstance } from "@/shared/lib/axiosInstance"
 
 /**
  * 게시물 가져오기
- * @param limit
- * @param skip
- * @returns
  */
 export const fetchPosts = async (limit: number, skip: number): Promise<ITestPosts> => {
-  const postRes = await fetch(`${getBaseUrl()}/posts?limit=${limit}&skip=${skip}`)
-  if (!postRes.ok) throw new Error("Failed to fetch posts")
-  const postsData = await postRes.json()
+  const { data: postsData } = await axiosInstance.get(`/posts`, {
+    params: { limit, skip },
+  })
 
-  const userRes = await fetch(`${getBaseUrl()}/users?limit=0&select=username,image`)
-  if (!userRes.ok) throw new Error("Failed to fetch users")
-  const usersData = await userRes.json()
+  const { data: usersData } = await axiosInstance.get(`/users`, {
+    params: { limit: 0, select: "username,image" },
+  })
 
-  const postsWithAuthors = await Promise.all(
-    postsData.posts.map(async (post: IPosts) => ({
-      ...post,
-      author: usersData.users.find((user: { id: number }) => user.id === post.userId),
-    })),
-  )
+  const postsWithAuthors = postsData.posts.map((post: IPosts) => ({
+    ...post,
+    author: usersData.users.find((user: IUser) => user.id === post.userId),
+  }))
 
   return {
     posts: postsWithAuthors,
@@ -34,19 +30,13 @@ export const fetchPosts = async (limit: number, skip: number): Promise<ITestPost
 
 /**
  * 태그별 게시물 가져오기
- * @param tag
- * @param limit
- * @param skip
- * @returns
  */
 export const fetchPostsByTag = async (tag: string): Promise<ITestPosts> => {
-  const postRes = await fetch(`${getBaseUrl()}/posts/tag/${tag}`)
-  if (!postRes.ok) throw new Error("Failed to fetch posts by tag")
-  const postsData = await postRes.json()
+  const { data: postsData } = await axiosInstance.get(`/posts/tag/${tag}`)
 
-  const userRes = await fetch(`${getBaseUrl()}/users?limit=0&select=username,image`)
-  if (!userRes.ok) throw new Error("Failed to fetch users")
-  const usersData = await userRes.json()
+  const { data: usersData } = await axiosInstance.get(`/users`, {
+    params: { limit: 0, select: "username,image" },
+  })
 
   const postsWithAuthors = postsData.posts.map((post: IPosts) => ({
     ...post,
@@ -63,22 +53,18 @@ export const fetchPostsByTag = async (tag: string): Promise<ITestPosts> => {
 
 /**
  * 게시물 검색
- * @param searchQuery
  */
 export const fetchSearchPosts = async (searchQuery: string): Promise<IPostResponse> => {
-  const res = await fetch(`${getBaseUrl()}/posts/search?q=${searchQuery}`)
-  if (!res.ok) {
-    throw new Error("Failed to search posts")
-  }
-  return res.json() as Promise<IPostResponse>
+  const { data } = await axiosInstance.get(`/posts/search`, {
+    params: { q: searchQuery },
+  })
+  return data
 }
 
 /**
  * 태그 가져오기
- * @returns
  */
-export const fetchTags = async () => {
-  const res = await fetch(`${getBaseUrl()}/posts/tags`)
-  if (!res.ok) throw new Error("Failed to fetch tags")
-  return res.json() as Promise<ITags[]>
+export const fetchTags = async (): Promise<ITags[]> => {
+  const { data } = await axiosInstance.get(`/posts/tags`)
+  return data
 }

@@ -1,6 +1,6 @@
 // entities/post/postApi.ts
 import { IPosts } from "@/entities/post/model/types"
-import { getBaseUrl } from "@/shared/lib/getBaseUrl"
+import { axiosInstance } from "@/shared/lib/axiosInstance"
 
 /**
  * 게시물 추가
@@ -8,13 +8,8 @@ import { getBaseUrl } from "@/shared/lib/getBaseUrl"
  * @returns
  */
 export const addPost = async (post: IPosts): Promise<IPosts> => {
-  const res = await fetch(`${getBaseUrl()}/posts/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(post),
-  })
-  if (!res.ok) throw new Error("Failed to add post")
-  return res.json() as Promise<IPosts>
+  const { data } = await axiosInstance.post("/posts/add", post)
+  return data as IPosts
 }
 
 /**
@@ -22,22 +17,17 @@ export const addPost = async (post: IPosts): Promise<IPosts> => {
  * @param post
  * @returns
  */
-export const updatePost = async (post: IPosts) => {
-  const res = await fetch(`${getBaseUrl()}/posts/${post.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(post),
-  })
-  if (!res.ok) throw new Error("Failed to update post")
-  return res.json() as Promise<IPosts>
+export const updatePost = async (post: IPosts): Promise<IPosts> => {
+  const { data } = await axiosInstance.put(`/posts/${post.id}`, post)
+  return data as IPosts
 }
 
-// 게시물 삭제
-export const deletePost = async (id: number) => {
-  const res = await fetch(`${getBaseUrl()}/posts/${id}`, {
-    method: "DELETE",
-  })
-
-  if (!res.ok) throw new Error("Failed to delete post")
-  return res.json() as Promise<IPosts>
+/**
+ * 게시물 삭제
+ * @param id
+ * @returns
+ */
+export const deletePost = async (id: number): Promise<IPosts> => {
+  const { data } = await axiosInstance.delete(`/posts/${id}`)
+  return data as IPosts
 }
