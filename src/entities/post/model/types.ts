@@ -7,8 +7,14 @@ interface ITestPosts {
   limit: number
 }
 
+export interface INewPost {
+  title: string
+  body: string
+  userId: number
+}
+
 interface IPosts {
-  author: Author
+  author?: Author
   id?: number
   title?: string
   body?: string
@@ -19,7 +25,7 @@ interface IPosts {
   }
   views?: number
   userId?: number
-  authorId: string
+  authorId?: string
   authorImage?: string
   authorUsername?: string
 }
@@ -39,4 +45,11 @@ interface ITags {
   url?: string
 }
 
-export type { IPosts, IPostWithAuthor, ITestPosts, ITags }
+interface IPostResponse {
+  posts: IPosts[]
+  total: number
+  skip: number
+  limit: number
+}
+
+export type { IPosts, IPostWithAuthor, ITestPosts, ITags, IPostResponse }

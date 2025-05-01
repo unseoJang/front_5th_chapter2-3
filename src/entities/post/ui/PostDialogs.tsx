@@ -2,6 +2,9 @@ import { highlightText } from "@/shared/lib/highlightText"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
 import { IPosts } from "../model/types"
 import { JSX } from "react"
+import { useAddPost } from "../hooks/useAddPost"
+import { usePostStore } from "../model/postStore"
+import { useUpdatePost } from "../hooks/useUpdatePost"
 
 interface PostDialogsProps {
   showAddDialog: boolean
@@ -11,14 +14,9 @@ interface PostDialogsProps {
   setShowEditDialog: (open: boolean) => void
   showPostDetailDialog: boolean
   setShowPostDetailDialog: (open: boolean) => void
-
   selectedPost: IPosts | null
   setSelectedPost: (post: IPosts | null) => void
-  setNewPost: (post: IPosts) => void
-
   searchQuery: string
-  onAddPost: () => void
-  onUpdatePost: () => void
   renderComments: (postId: number) => JSX.Element
 }
 
@@ -32,12 +30,27 @@ const PostDialogs = ({
   setShowPostDetailDialog,
   selectedPost,
   setSelectedPost,
-  setNewPost,
   searchQuery,
-  onAddPost,
-  onUpdatePost,
   renderComments,
 }: PostDialogsProps) => {
+  const { posts, setPosts, setNewPost } = usePostStore()
+  // 게시물 추가
+  const { mutate: addPost } = useAddPost({
+    onSuccess: (data) => {
+      setPosts([data, ...posts]) // ✅ 서버에서 받은 진짜 게시물
+      setShowAddDialog(false)
+      setNewPost({ title: "", body: "", userId: 1 })
+    },
+  })
+
+  // 게시물 업데이트
+  const { mutate: updatePost } = useUpdatePost({
+    onSuccess: (data) => {
+      setPosts(posts.map((post) => (post.id === data.id ? data : post)))
+      setShowEditDialog(false)
+    },
+  })
+
   return (
     <>
       {/* 게시물 추가 대화상자 */}
@@ -50,7 +63,7 @@ const PostDialogs = ({
             <Input
               placeholder="제목"
               value={newPost.title}
-              onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+              onChange={(e) => setNewPost({ ...newPost, title: e.target.value, body: newPost.body })}
             />
             <Textarea
               rows={30}
@@ -64,7 +77,7 @@ const PostDialogs = ({
               value={newPost.userId}
               onChange={(e) => setNewPost({ ...newPost, userId: Number(e.target.value) })}
             />
-            <Button onClick={onAddPost}>게시물 추가</Button>
+            <Button onClick={() => addPost(newPost)}>게시물 추가</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -87,7 +100,15 @@ const PostDialogs = ({
               value={selectedPost?.body || ""}
               onChange={(e) => selectedPost && setSelectedPost({ ...selectedPost, body: e.target.value })}
             />
-            <Button onClick={onUpdatePost}>게시물 업데이트</Button>
+            <Button
+              onClick={() => {
+                if (selectedPost) {
+                  updatePost(selectedPost)
+                }
+              }}
+            >
+              게시물 업데이트
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -99,8 +120,8 @@ const PostDialogs = ({
             <DialogTitle>{selectedPost?.title && highlightText(selectedPost?.title, searchQuery)}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p>{selectedPost && highlightText(selectedPost?.body, searchQuery)}</p>
-            {selectedPost !== null && selectedPost.id !== undefined && renderComments(selectedPost.id)}
+            <p>{selectedPost?.body && highlightText(selectedPost.body, searchQuery)}</p>
+            {selectedPost?.id && renderComments(selectedPost.id)}
           </div>
         </DialogContent>
       </Dialog>

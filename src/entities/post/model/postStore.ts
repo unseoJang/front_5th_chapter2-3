@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
-import type { IPosts, ITags } from "./types"
+import type { INewPost, IPosts, ITags } from "./types"
 
 interface PostState {
   posts: IPosts[]
@@ -39,7 +39,7 @@ interface PostState {
   setLoading: (loading: boolean) => void
   setShowEditDialog: (value: boolean) => void
   setShowAddDialog: (value: boolean) => void
-  setNewPost: (post: { title: string; body: string; userId: number }) => void
+  setNewPost: (post: INewPost) => void
   setShowPostDetailDialog: (value: boolean) => void
   setShowAddCommentDialog: (value: boolean) => void
   setShowEditCommentDialog: (value: boolean) => void
