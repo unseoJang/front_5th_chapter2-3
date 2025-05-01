@@ -79,8 +79,8 @@ export const fetchSearchPosts = async (searchQuery: string): Promise<IPostRespon
  * @param post
  * @returns
  */
-export const addPost = async (post: IPosts) => {
-  const res = await fetch(`/api/posts/add`, {
+export const addPost = async (post: IPosts): Promise<IPosts> => {
+  const res = await fetch("/api/posts/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(post),

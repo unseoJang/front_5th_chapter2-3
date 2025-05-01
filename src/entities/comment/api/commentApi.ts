@@ -39,6 +39,7 @@ export const addComment = async (comment: IComment): Promise<IComment> => {
 export const updateComment = async (id: number, body: string): Promise<IComment> => {
   const res = await fetch(`/api/comments/${id}`, {
     method: "PUT",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ body }),
   })
   if (!res.ok) throw new Error("Failed to update comment")
@@ -64,11 +65,11 @@ export const deleteComment = async (id: number): Promise<IComment> => {
  * @returns
  */
 export const likeComment = async (id: number, likes: number): Promise<IComment> => {
-  const res = await fetch(`/api/comments/like/${id}`, {
+  const res = await fetch(`/api/comments/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ likes }),
   })
   if (!res.ok) throw new Error("Failed to like comment")
-  return res.json() as Promise<IComment>
+  return res.json()
 }

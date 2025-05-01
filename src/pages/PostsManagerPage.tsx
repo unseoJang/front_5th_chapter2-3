@@ -66,7 +66,6 @@ const PostsManager = () => {
     setShowAddDialog,
     showAddDialog,
     newPost,
-    setNewPost,
     showPostDetailDialog,
     setShowPostDetailDialog,
     showAddCommentDialog,
@@ -78,7 +77,7 @@ const PostsManager = () => {
   } = usePostStore()
   const { selectedUser, setSelectedUser } = useUserStore()
 
-  const { comments, selectedComment, newComment, setComments, setNewComment, setSelectedComment } = useCommentStore()
+  const { selectedComment, setNewComment, setSelectedComment } = useCommentStore()
   // URL 업데이트 함수
   const updateURL = () => {
     const params = new URLSearchParams()
@@ -103,153 +102,10 @@ const PostsManager = () => {
   // 태그별 게시물 가져오기
   const { data: postsByTagData } = usePostByTag(selectedTag)
 
-  // 게시물 추가
-  const addPost = async () => {
-    try {
-      const response = await fetch("/api/posts/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      })
-      const data = await response.json()
-      setPosts([data, ...posts])
-      setShowAddDialog(false)
-      setNewPost({ title: "", body: "", userId: 1 })
-    } catch (error) {
-      console.error("게시물 추가 오류:", error)
-    }
-  }
-
-  // 게시물 업데이트
-  const updatePost = async () => {
-    if (!selectedPost) return
-    try {
-      const response = await fetch(`/api/posts/${selectedPost.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedPost),
-      })
-      const data = await response.json()
-      setPosts(posts.map((post) => (post.id === data.id ? data : post)))
-      setShowEditDialog(false)
-    } catch (error) {
-      console.error("게시물 업데이트 오류:", error)
-    }
-  }
-
-  // 게시물 삭제
-  const deletePost = async (id: number) => {
-    try {
-      await fetch(`/api/posts/${id}`, {
-        method: "DELETE",
-      })
-      setPosts(posts.filter((post) => post.id !== id))
-    } catch (error) {
-      console.error("게시물 삭제 오류:", error)
-    }
-  }
-
-  // 댓글 가져오기
-  // const fetchComments = async (postId: number) => {
-  //   if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
-  //   try {
-  //     const response = await fetch(`/api/comments/post/${postId}`)
-  //     const data = await response.json()
-  //     setComments((prev) => ({ ...prev, [postId]: data.comments }))
-  //   } catch (error) {
-  //     console.error("댓글 가져오기 오류:", error)
-  //   }
-  // }
-
-  // 댓글 추가
-  // const addComment = async () => {
-  //   try {
-  //     const response = await fetch("/api/comments/add", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(newComment),
-  //     })
-  //     const data = await response.json()
-  //     setComments((prev) => ({
-  //       ...prev,
-  //       [data.postId]: [...(prev[data.postId] || []), data],
-  //     }))
-  //     setShowAddCommentDialog(false)
-  //     setNewComment({ body: "", postId: 0, userId: 1 })
-  //   } catch (error) {
-  //     console.error("댓글 추가 오류:", error)
-  //   }
-  // }
-
-  // 댓글 업데이트
-  const updateComment = async () => {
-    if (!selectedComment) return
-    try {
-      const response = await fetch(`/api/comments/${selectedComment.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: selectedComment.body }),
-      })
-      const data = await response.json()
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
-      }))
-      setShowEditCommentDialog(false)
-    } catch (error) {
-      console.error("댓글 업데이트 오류:", error)
-    }
-  }
-
-  // 댓글 삭제
-  const deleteComment = async (id: number, postId: number) => {
-    try {
-      await fetch(`/api/comments/${id}`, {
-        method: "DELETE",
-      })
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].filter((comment) => comment.id !== id),
-      }))
-    } catch (error) {
-      console.error("댓글 삭제 오류:", error)
-    }
-  }
-
-  // 댓글 좋아요
-  const likeComment = async (id: number, postId: number) => {
-    try {
-      const oldComment = comments[postId]?.find((c) => c.id === id)
-      if (!oldComment?.likes) return
-
-      const updatedLikes = oldComment.likes + 1
-
-      const response = await fetch(`/api/comments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ likes: updatedLikes }),
-      })
-
-      const data = await response.json()
-      console.log("수정된 댓글 데이터", data)
-
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].map((comment) =>
-          comment.id === data.id ? { ...comment, likes: updatedLikes } : comment,
-        ),
-      }))
-      console.log("해당 postId 댓글 목록", comments[postId])
-    } catch (error) {
-      console.error("댓글 좋아요 오류:", error)
-    }
-  }
-
   // 게시물 상세 보기
   const openPostDetail = (post: IPosts) => {
     if (!post.id) return
     setSelectedPost(post)
-    // fetchComments(post.id)
     setShowPostDetailDialog(true)
   }
 
@@ -308,7 +164,6 @@ const PostsManager = () => {
         setSelectedPost(post)
         setShowEditDialog(true)
       }}
-      onDeletePost={deletePost}
       onSelectTag={setSelectedTag}
       selectedTag={""}
     />
@@ -321,12 +176,12 @@ const PostsManager = () => {
         postId={postId}
         // comments={comments[postId] || []}
         searchQuery={searchQuery}
-        onLikeComment={likeComment}
+        // onLikeComment={likeComment}
         onEditComment={(comment) => {
           setSelectedComment(comment)
           setShowEditCommentDialog(true)
         }}
-        onDeleteComment={deleteComment}
+        // onDeleteComment={deleteComment}
         onAddComment={(postId) => {
           setNewComment({ body: "", postId, userId: 1 })
           setShowAddCommentDialog(true)
@@ -358,13 +213,11 @@ const PostsManager = () => {
             onChangeSearchQuery={setSearchQuery}
             onChangeTag={(value) => {
               setSelectedTag(value)
-              // fetchPostsByTag(value)
               setPosts(postsByTagData?.posts || [])
               updateURL()
             }}
             onChangeSortBy={setSortBy}
             onChangeSortOrder={setSortOrder}
-            // onSearch={searchPosts}
             onSearch={() => {
               setPosts(searchPostsData?.posts || [])
               setTotal(searchPostsData?.total || 0)
@@ -413,36 +266,18 @@ const PostsManager = () => {
         setShowPostDetailDialog={setShowPostDetailDialog}
         selectedPost={selectedPost}
         setSelectedPost={setSelectedPost}
-        setNewPost={setNewPost}
         searchQuery={searchQuery}
-        onAddPost={addPost}
-        onUpdatePost={updatePost}
         renderComments={renderComments}
       />
 
       {/* 댓글 대화상자 */}
-      {/* <CommentDialogs
-        showAddDialog={showAddCommentDialog}
-        setShowAddDialog={setShowAddCommentDialog}
-        showEditDialog={showEditCommentDialog}
-        setShowEditDialog={setShowEditCommentDialog}
-        newComment={newComment}
-        selectedComment={selectedComment}
-        onChangeNewComment={(body) => setNewComment((prev) => ({ ...prev, body }))}
-        onChangeSelectedComment={(body) => selectedComment && setSelectedComment({ ...selectedComment, body })}
-        onAddComment={addComment}
-        onUpdateComment={updateComment}
-      /> */}
       <CommentDialogs
         showAddDialog={showAddCommentDialog}
         setShowAddDialog={setShowAddCommentDialog}
         showEditDialog={showEditCommentDialog}
         setShowEditDialog={setShowEditCommentDialog}
-        // newComment={newComment}
         selectedComment={selectedComment}
-        // onChangeNewComment={(body) => setNewComment((prev) => ({ ...prev, body }))}
         onChangeSelectedComment={(body) => selectedComment && setSelectedComment({ ...selectedComment, body })}
-        onUpdateComment={updateComment}
       />
 
       {/* 사용자 모달 */}

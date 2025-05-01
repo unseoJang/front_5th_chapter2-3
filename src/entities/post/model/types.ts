@@ -8,7 +8,7 @@ interface ITestPosts {
 }
 
 interface IPosts {
-  author: Author
+  author?: Author
   id?: number
   title?: string
   body?: string
@@ -19,7 +19,7 @@ interface IPosts {
   }
   views?: number
   userId?: number
-  authorId: string
+  authorId?: string
   authorImage?: string
   authorUsername?: string
 }

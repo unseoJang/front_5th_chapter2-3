@@ -3,17 +3,15 @@ import type { IComment } from "@/entities/comment/model/types"
 
 import { useAddComment } from "@/entities/comment/hooks/useAddComment"
 import { useCommentStore } from "@/entities/comment/model/commentStore"
+import { useUpdateComment } from "../hooks/useUpdateComment"
 
 interface CommentDialogsProps {
   showAddDialog: boolean
   setShowAddDialog: (open: boolean) => void
   showEditDialog: boolean
   setShowEditDialog: (open: boolean) => void
-  // newComment: IComment
   selectedComment: IComment | null
-  // onChangeNewComment: (body: string) => void
   onChangeSelectedComment: (body: string) => void
-  onUpdateComment: () => void
 }
 
 const CommentDialogs = ({
@@ -21,20 +19,26 @@ const CommentDialogs = ({
   setShowAddDialog,
   showEditDialog,
   setShowEditDialog,
-  // newComment,
   selectedComment,
-  // onChangeNewComment,
   onChangeSelectedComment,
-  onUpdateComment,
 }: CommentDialogsProps) => {
   const { newComment, setNewComment } = useCommentStore()
 
+  // 댓글 추가
   const { mutate: addComment } = useAddComment({
     onSuccess: () => {
       setShowAddDialog(false)
-      setNewComment((prev) => ({ ...prev, body }))
+      setNewComment((prev: IComment) => ({ ...prev }))
     },
   })
+
+  // 댓글 업데이트
+  const { mutate: updateComment } = useUpdateComment({
+    onSuccess: () => {
+      setShowEditDialog(false)
+    },
+  })
+
   return (
     <>
       {/* 댓글 추가 대화상자 */}
@@ -73,7 +77,19 @@ const CommentDialogs = ({
               value={selectedComment?.body || ""}
               onChange={(e) => onChangeSelectedComment(e.target.value)}
             />
-            <Button onClick={onUpdateComment}>댓글 업데이트</Button>
+            <Button
+              onClick={() => {
+                if (selectedComment) {
+                  updateComment({
+                    id: selectedComment.id as number,
+                    body: selectedComment.body,
+                    postId: selectedComment.postId,
+                  })
+                }
+              }}
+            >
+              댓글 업데이트
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
