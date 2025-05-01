@@ -93,9 +93,9 @@ TanstackQuery를 이용하여 코드를 개선하기
 [x] 9. UserModal.tsx 컴포넌트 분리해서 유저 정보 모달 옮김
 [x] 10. API 호출 함수들은 postApi.ts, commentApi.ts로 분리 -> entities/api/ 분리 + React Query 적용
 [x] 10-1. @tanstack/react-query 기반으로 usePostsQuery, useAddPostMutation 등으로 wrapping
-[] 10-2. (선택) api.ts들을 각 feature 단위로 분리 (features/post/api/ 등)
-[] 11. shared/lib에 유틸성 함수 더 추가
-[] 12. feature/ui, feature/api 폴더로 실제 유저 행동 단위 컴포넌트/로직 옮기기
+[x] 10-2. (선택) api.ts들을 각 feature 단위로 분리 (features/post/api/ 등)
+[x] 11. shared/lib에 유틸성 함수 더 추가
+[x] 12. feature/ui, feature/api 폴더로 실제 유저 행동 단위 컴포넌트/로직 옮기기
 [] 13. widgets 폴더 구조 설계 (예: PostWidget, CommentSection 등)
 [] 11. 최종적으로 PostManager.tsx는 위 컴포넌트들을 조립하는 코드만 남긴다
 

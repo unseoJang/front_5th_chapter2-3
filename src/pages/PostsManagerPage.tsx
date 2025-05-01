@@ -1,18 +1,7 @@
 import { useEffect } from "react"
 import { Plus } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../shared/ui"
+import { Button, Card, CardContent, CardHeader, CardTitle } from "../shared/ui"
 
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
@@ -24,11 +13,12 @@ import PostFilters from "@/features/postManager/ui/PostFilters"
 import PostDialogs from "@/entities/post/ui/PostDialogs"
 import UserModal from "@/entities/user/ui/UserModal"
 import CommentDialogs from "@/entities/comment/ui/CommentDialogs"
+import PaginationControl from "@/widgets/ui/PaginationControl"
 import { PostTableContainer } from "@/features/postManager/ui/PostTableContainer"
+import CommentListContainer from "@/features/commentManager/ui/CommentListContainer"
 
 // features hooks
 import { usePosts, usePostTags, usePostByTag, useSearchPosts } from "@/features/postManager/hook/useFilteredPosts"
-import CommentListContainer from "@/features/commentManager/ui/CommentListContainer"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -165,30 +155,14 @@ const PostsManager = () => {
           {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : <PostTableContainer />}
 
           {/* 페이지네이션 */}
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span>표시</span>
-              <Select value={limit.toString()} onValueChange={(value) => setLimit(Number(value))}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="10" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                </SelectContent>
-              </Select>
-              <span>항목</span>
-            </div>
-            <div className="flex gap-2">
-              <Button disabled={skip === 0} onClick={() => setSkip(Math.max(0, skip - limit))}>
-                이전
-              </Button>
-              <Button disabled={skip + limit >= total} onClick={() => setSkip(skip + limit)}>
-                다음
-              </Button>
-            </div>
-          </div>
+          <PaginationControl
+            skip={skip}
+            limit={limit}
+            total={total}
+            onChangeLimit={setLimit}
+            onPrev={() => setSkip(Math.max(0, skip - limit))}
+            onNext={() => setSkip(skip + limit)}
+          />
         </div>
       </CardContent>
 
