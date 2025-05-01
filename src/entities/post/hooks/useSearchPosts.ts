@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { fetchSearchPosts } from "@/entities/post/api/postApi"
+import { fetchSearchPosts } from "@/features/postManager/api/postManagerApi"
 import type { IPostResponse } from "@/entities/post/model/types"
 
 export const useSearchPosts = (query: string) => {

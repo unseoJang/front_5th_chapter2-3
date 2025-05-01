@@ -1,6 +1,6 @@
 // entities/post/hooks/usePostTags.ts
 import { useQuery } from "@tanstack/react-query"
-import { fetchTags } from "@/entities/post/api/postApi"
+import { fetchTags } from "@/features/postManager/api/postManagerApi"
 import { ITags } from "../model/types"
 
 export const usePostTags = () => {

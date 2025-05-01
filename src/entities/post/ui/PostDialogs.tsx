@@ -63,7 +63,7 @@ const PostDialogs = ({
             <Input
               placeholder="제목"
               value={newPost.title}
-              onChange={(e) => setNewPost({ ...newPost, title: e.target.value, body: newPost.body || "" })}
+              onChange={(e) => setNewPost({ ...newPost, title: e.target.value, body: newPost.body })}
             />
             <Textarea
               rows={30}

@@ -39,13 +39,13 @@
 
 체크포인트
 
-- [ ] 전역상태관리를 사용해서 상태를 분리하고 관리했나요?
+- [x] 전역상태관리를 사용해서 상태를 분리하고 관리했나요?
 - [ ] Props Drilling을 최소화했나요?
 - [ ] shared 공통 컴포넌트를 분리했나요?
 - [ ] shared 공통 로직을 분리했나요?
-- [ ] entities를 중심으로 type을 정의하고 model을 분리했나요?
+- [x] entities를 중심으로 type을 정의하고 model을 분리했나요?
 - [x] entities를 중심으로 ui를 분리했나요?
-- [ ] entities를 중심으로 api를 분리했나요?
+- [x] entities를 중심으로 api를 분리했나요?
 - [x] feature를 중심으로 사용자행동(이벤트 처리)를 분리했나요?
 - [ ] feature를 중심으로 ui를 분리했나요?
 - [ ] feature를 중심으로 api를 분리했나요?
@@ -91,10 +91,69 @@ TanstackQuery를 이용하여 코드를 개선하기
 [x] 7. PostDialogs.tsx 컴포넌트 분리해서 게시글 추가/수정 다이얼로그 옮김
 [x] 8. CommentList.tsx 컴포넌트 분리해서 댓글 리스트/관리 옮김
 [x] 9. UserModal.tsx 컴포넌트 분리해서 유저 정보 모달 옮김
-[] 10. API 호출 함수들은 postApi.ts, commentApi.ts로 분리 -> entities/api/ 분리 + React Query 적용
-[] 10-1. @tanstack/react-query 기반으로 usePostsQuery, useAddPostMutation 등으로 wrapping
+[x] 10. API 호출 함수들은 postApi.ts, commentApi.ts로 분리 -> entities/api/ 분리 + React Query 적용
+[x] 10-1. @tanstack/react-query 기반으로 usePostsQuery, useAddPostMutation 등으로 wrapping
 [] 10-2. (선택) api.ts들을 각 feature 단위로 분리 (features/post/api/ 등)
 [] 11. shared/lib에 유틸성 함수 더 추가
 [] 12. feature/ui, feature/api 폴더로 실제 유저 행동 단위 컴포넌트/로직 옮기기
 [] 13. widgets 폴더 구조 설계 (예: PostWidget, CommentSection 등)
 [] 11. 최종적으로 PostManager.tsx는 위 컴포넌트들을 조립하는 코드만 남긴다
+
+
+📌 정리: 분리된 API 및 훅 구조
+✅ GET 관련
+usePosts(limit, skip) → 게시물 리스트
+
+usePostTags() → 태그 리스트
+
+usePostByTag(tag) → 태그별 게시물
+
+useSearchPosts(query) → 검색 결과
+
+useComments(postId) → 댓글 리스트
+
+✅ POST
+useAddPost() → 게시물 추가
+
+useAddComment() → 댓글 추가
+
+✅ PUT / PATCH
+useUpdatePost() → 게시물 업데이트
+
+useUpdateComment() → 댓글 업데이트
+
+useLikeComment() → 댓글 좋아요 (PATCH)
+
+✅ DELETE
+useDeletePost() → 게시물 삭제
+
+useDeleteComment() → 댓글 삭제
+
+```
+src/
+├── entities/
+│   ├── post/
+│   │   ├── api/
+│   │   │   └── postApi.ts         ← 기본 CRUD: 게시물 생성/수정/삭제
+│   │   └── ...
+│   ├── comment/
+│   │   ├── api/
+│   │   │   └── commentApi.ts      ← 기본 CRUD: 댓글 추가/삭제 등
+
+src/
+└── features/
+    ├── postManager/
+    │   ├── api/
+    │   │   └── postManagerApi.ts      # 게시물 리스트, 필터링된 검색 API 등
+    │   ├── hooks/
+    │   │   └── useFilteredPosts.ts    # 검색, 정렬 등 postStore에 의존하는 custom hook
+    │   ├── ui/
+    │   │   ├── PostManagerPage.tsx    # 화면 구성
+    │   │   └── PostFilters.tsx        # 검색창, 정렬 필터 등
+    │   └── index.ts                   # feature 진입점 (선택)
+    │
+    ├── commentAnalytics/
+    │   ├── ui/
+    │   │   └── CommentStatsChart.tsx  # 통계 시각화 컴포넌트
+
+```

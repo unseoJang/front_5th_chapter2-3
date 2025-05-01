@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { fetchPostsByTag } from "../api/postApi"
+import { fetchPostsByTag } from "@/features/postManager/api/postManagerApi"
 import { ITestPosts } from "../model/types"
 
 export const usePostByTag = (tag: string) => {

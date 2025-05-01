@@ -2,38 +2,35 @@ import { IPosts } from "@/entities/post/model/types"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, Button } from "@/shared/ui"
 import { ThumbsUp, ThumbsDown, MessageSquare, Edit2, Trash2 } from "lucide-react"
 import { highlightText } from "@/shared/lib/highlightText" // highlight 유틸 import
-import { IUser } from "@/entities/user/model/types"
 
 import { useDeletePost } from "@/entities/post/hooks/useDeletePost"
 
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
+import { useOpenUserModal } from "@/entities/user/hooks/useOpenUserModal"
 
 interface PostTableProps {
   posts: IPosts[]
   searchQuery: string
   selectedTag: string
   onOpenPostDetail: (post: IPosts) => void
-  onOpenUserModal: (user: IUser) => void
   onOpenEditDialog: (post: IPosts) => void
-  // onDeletePost: (postId: number) => void
   onSelectTag: (tag: string) => void
 }
 
 // 게시물 테이블 렌더링
 export const PostTable = ({
-  // posts,
   searchQuery,
   selectedTag,
-  onOpenUserModal,
   onOpenPostDetail,
   onOpenEditDialog,
-  // onDeletePost,
   onSelectTag,
 }: PostTableProps) => {
   const { posts } = usePostStore()
   // 게시물 삭제
   const { mutate: deletePost } = useDeletePost()
+  // 사용자 모달 열기
+  const { mutate: openUserModal } = useOpenUserModal()
 
   return (
     <Table>
@@ -76,13 +73,7 @@ export const PostTable = ({
             <TableCell>
               <div
                 className="flex items-center space-x-2 cursor-pointer"
-                onClick={() =>
-                  onOpenUserModal({
-                    id: post.userId,
-                    username: post.authorUsername || "",
-                    image: post.authorImage || "",
-                  } as IUser)
-                }
+                onClick={() => openUserModal(Number(post.userId))}
               >
                 <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
                 <span>{post.author?.username}</span>

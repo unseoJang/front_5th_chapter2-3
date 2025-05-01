@@ -14,26 +14,21 @@ import {
   SelectValue,
 } from "../shared/ui"
 
-// types
-import type { IPosts } from "../entities/post/model/types"
-import type { IUser } from "../entities/user/model/types"
-
 // zustand
 import { usePostStore } from "@/entities/post/model/postStore"
 import { useCommentStore } from "@/entities/comment/model/commentStore"
-import { PostTable } from "@/entities/post/ui/PostTable"
 import { useUserStore } from "@/entities/user/model/userStore"
 
 // components
-import PostFilters from "@/entities/post/ui/PostFilters"
+import PostFilters from "@/features/postManager/ui/PostFilters"
 import PostDialogs from "@/entities/post/ui/PostDialogs"
-import CommentList from "@/entities/comment/ui/CommentList"
 import UserModal from "@/entities/user/ui/UserModal"
 import CommentDialogs from "@/entities/comment/ui/CommentDialogs"
-import { usePosts } from "@/entities/post/hooks/usePosts"
-import { usePostTags } from "@/entities/post/hooks/usePostTags"
-import { usePostByTag } from "@/entities/post/hooks/usePostByTag"
-import { useSearchPosts } from "@/entities/post/hooks/useSearchPosts"
+import { PostTableContainer } from "@/features/postManager/ui/PostTableContainer"
+
+// features hooks
+import { usePosts, usePostTags, usePostByTag, useSearchPosts } from "@/features/postManager/hook/useFilteredPosts"
+import CommentListContainer from "@/features/commentManager/ui/CommentListContainer"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -41,7 +36,6 @@ const PostsManager = () => {
 
   // 전역 상태 관리
   const {
-    posts,
     selectedPost,
     tags,
     skip,
@@ -75,9 +69,9 @@ const PostsManager = () => {
     showUserModal,
     setShowUserModal,
   } = usePostStore()
-  const { selectedUser, setSelectedUser } = useUserStore()
+  const { selectedUser } = useUserStore()
 
-  const { selectedComment, setNewComment, setSelectedComment } = useCommentStore()
+  const { selectedComment, setSelectedComment } = useCommentStore()
   // URL 업데이트 함수
   const updateURL = () => {
     const params = new URLSearchParams()
@@ -102,25 +96,6 @@ const PostsManager = () => {
   // 태그별 게시물 가져오기
   const { data: postsByTagData } = usePostByTag(selectedTag)
 
-  // 게시물 상세 보기
-  const openPostDetail = (post: IPosts) => {
-    if (!post.id) return
-    setSelectedPost(post)
-    setShowPostDetailDialog(true)
-  }
-
-  // 사용자 모달 열기
-  const openUserModal = async (user: IUser) => {
-    try {
-      const response = await fetch(`/api/users/${user.id}`)
-      const userData = await response.json()
-      setSelectedUser(userData)
-      setShowUserModal(true)
-    } catch (error) {
-      console.error("사용자 정보 가져오기 오류:", error)
-    }
-  }
-
   useEffect(() => {
     if (tagData) setTags(tagData)
   }, [setTags, tagData])
@@ -139,7 +114,6 @@ const PostsManager = () => {
       setPosts(postData.posts)
       setTotal(postData.total)
     }
-
     updateURL()
   }, [searchQuery, selectedTag, postData, postsByTagData, searchPostsData])
 
@@ -152,43 +126,6 @@ const PostsManager = () => {
     setSortOrder(params.get("sortOrder") || "asc")
     setSelectedTag(params.get("tag") || "")
   }, [location.search])
-
-  // 게시물 테이블 렌더링
-  const renderPostTable = () => (
-    <PostTable
-      posts={posts}
-      searchQuery={searchQuery}
-      onOpenPostDetail={openPostDetail}
-      onOpenUserModal={openUserModal}
-      onOpenEditDialog={(post) => {
-        setSelectedPost(post)
-        setShowEditDialog(true)
-      }}
-      onSelectTag={setSelectedTag}
-      selectedTag={""}
-    />
-  )
-
-  // 댓글 렌더링
-  const renderComments = (postId: number) => {
-    return (
-      <CommentList
-        postId={postId}
-        // comments={comments[postId] || []}
-        searchQuery={searchQuery}
-        // onLikeComment={likeComment}
-        onEditComment={(comment) => {
-          setSelectedComment(comment)
-          setShowEditCommentDialog(true)
-        }}
-        // onDeleteComment={deleteComment}
-        onAddComment={(postId) => {
-          setNewComment({ body: "", postId, userId: 1 })
-          setShowAddCommentDialog(true)
-        }}
-      />
-    )
-  }
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
@@ -225,7 +162,7 @@ const PostsManager = () => {
           />
 
           {/* 게시물 테이블 */}
-          {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
+          {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : <PostTableContainer />}
 
           {/* 페이지네이션 */}
           <div className="flex justify-between items-center">
@@ -267,7 +204,7 @@ const PostsManager = () => {
         selectedPost={selectedPost}
         setSelectedPost={setSelectedPost}
         searchQuery={searchQuery}
-        renderComments={renderComments}
+        renderComments={(postId) => <CommentListContainer postId={postId} />}
       />
 
       {/* 댓글 대화상자 */}

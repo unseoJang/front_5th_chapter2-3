@@ -7,6 +7,12 @@ interface ITestPosts {
   limit: number
 }
 
+export interface INewPost {
+  title: string
+  body: string
+  userId: number
+}
+
 interface IPosts {
   author?: Author
   id?: number
