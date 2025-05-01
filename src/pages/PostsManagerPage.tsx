@@ -99,53 +99,9 @@ const PostsManager = () => {
 
   // 게시물 검색
   const { data: searchPostsData } = useSearchPosts(searchQuery)
-  // const searchPosts = async () => {
-  //   if (!searchQuery) {
-  //     // fetchPosts()
-  //     setPosts(postData?.posts || [])
-  //     return
-  //   }
-  //   setLoading(true)
-  //   try {
-  //     const response = await fetch(`/api/posts/search?q=${searchQuery}`)
-  //     const data = await response.json()
-  //     setPosts(data.posts)
-  //     setTotal(data.total)
-  //   } catch (error) {
-  //     console.error("게시물 검색 오류:", error)
-  //   }
-  //   setLoading(false)
-  // }
 
   // 태그별 게시물 가져오기
   const { data: postsByTagData } = usePostByTag(selectedTag)
-
-  // const fetchPostsByTag = async (tag: string) => {
-  //   if (!tag || tag === "all") {
-  //     fetchPosts()
-  //     return
-  //   }
-  //   setLoading(true)
-  //   try {
-  //     const [postsResponse, usersResponse] = await Promise.all([
-  //       fetch(`/api/posts/tag/${tag}`),
-  //       fetch("/api/users?limit=0&select=username,image"),
-  //     ])
-  //     const postsData = await postsResponse.json()
-  //     const usersData = await usersResponse.json()
-
-  //     const postsWithUsers = postsData.posts.map((post: IPosts) => ({
-  //       ...post,
-  //       author: usersData.users.find((user: IUser) => user.id === post.userId),
-  //     }))
-
-  //     setPosts(postsWithUsers)
-  //     setTotal(postsData.total)
-  //   } catch (error) {
-  //     console.error("태그별 게시물 가져오기 오류:", error)
-  //   }
-  //   setLoading(false)
-  // }
 
   // 게시물 추가
   const addPost = async () => {
@@ -482,9 +438,9 @@ const PostsManager = () => {
         setShowAddDialog={setShowAddCommentDialog}
         showEditDialog={showEditCommentDialog}
         setShowEditDialog={setShowEditCommentDialog}
-        newComment={newComment}
+        // newComment={newComment}
         selectedComment={selectedComment}
-        onChangeNewComment={(body) => setNewComment((prev) => ({ ...prev, body }))}
+        // onChangeNewComment={(body) => setNewComment((prev) => ({ ...prev, body }))}
         onChangeSelectedComment={(body) => selectedComment && setSelectedComment({ ...selectedComment, body })}
         onUpdateComment={updateComment}
       />

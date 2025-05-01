@@ -2,15 +2,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, Textarea, Button } fr
 import type { IComment } from "@/entities/comment/model/types"
 
 import { useAddComment } from "@/entities/comment/hooks/useAddComment"
+import { useCommentStore } from "@/entities/comment/model/commentStore"
 
 interface CommentDialogsProps {
   showAddDialog: boolean
   setShowAddDialog: (open: boolean) => void
   showEditDialog: boolean
   setShowEditDialog: (open: boolean) => void
-  newComment: IComment
+  // newComment: IComment
   selectedComment: IComment | null
-  onChangeNewComment: (body: string) => void
+  // onChangeNewComment: (body: string) => void
   onChangeSelectedComment: (body: string) => void
   onUpdateComment: () => void
 }
@@ -20,16 +21,18 @@ const CommentDialogs = ({
   setShowAddDialog,
   showEditDialog,
   setShowEditDialog,
-  newComment,
+  // newComment,
   selectedComment,
-  onChangeNewComment,
+  // onChangeNewComment,
   onChangeSelectedComment,
   onUpdateComment,
 }: CommentDialogsProps) => {
+  const { newComment, setNewComment } = useCommentStore()
+
   const { mutate: addComment } = useAddComment({
     onSuccess: () => {
       setShowAddDialog(false)
-      onChangeNewComment("")
+      setNewComment((prev) => ({ ...prev, body }))
     },
   })
   return (
@@ -44,7 +47,7 @@ const CommentDialogs = ({
             <Textarea
               placeholder="댓글 내용"
               value={newComment.body}
-              onChange={(e) => onChangeNewComment(e.target.value)}
+              onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
             />
             <Button
               onClick={() => {
