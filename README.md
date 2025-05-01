@@ -40,16 +40,16 @@
 체크포인트
 
 - [x] 전역상태관리를 사용해서 상태를 분리하고 관리했나요?
-- [ ] Props Drilling을 최소화했나요?
-- [ ] shared 공통 컴포넌트를 분리했나요?
-- [ ] shared 공통 로직을 분리했나요?
+- [x] Props Drilling을 최소화했나요?
+- [x] shared 공통 컴포넌트를 분리했나요?
+- [x] shared 공통 로직을 분리했나요?
 - [x] entities를 중심으로 type을 정의하고 model을 분리했나요?
 - [x] entities를 중심으로 ui를 분리했나요?
 - [x] entities를 중심으로 api를 분리했나요?
 - [x] feature를 중심으로 사용자행동(이벤트 처리)를 분리했나요?
-- [ ] feature를 중심으로 ui를 분리했나요?
-- [ ] feature를 중심으로 api를 분리했나요?
-- [ ] widget을 중심으로 데이터를 재사용가능한 형태로 분리했나요?
+- [x] feature를 중심으로 ui를 분리했나요?
+- [x] feature를 중심으로 api를 분리했나요?
+- [x] widget을 중심으로 데이터를 재사용가능한 형태로 분리했나요?
 ```
 
 # [6주차] 심화과제
@@ -75,10 +75,10 @@ TanstackQuery를 이용하여 코드를 개선하기
 
 체크포인트
 
-- [ ] 모든 API 호출이 TanStack Query의 useQuery와 useMutation으로 대체되었는가?
-- [ ] 쿼리 키가 적절히 설정되었는가?
-- [ ] fetch와 useState가 아닌 선언적인 함수형 프로그래밍이 적절히 적용되었는가?
-- [ ] 캐싱과 리프레시 전략이 올바르게 구현되었는가?
+- [x] 모든 API 호출이 TanStack Query의 useQuery와 useMutation으로 대체되었는가?
+- [x] 쿼리 키가 적절히 설정되었는가?
+- [x] fetch와 useState가 아닌 선언적인 함수형 프로그래밍이 적절히 적용되었는가?
+- [x] 캐싱과 리프레시 전략이 올바르게 구현되었는가?
 ```
 
 **단계별 진행 과정**
@@ -96,8 +96,8 @@ TanstackQuery를 이용하여 코드를 개선하기
 [x] 10-2. (선택) api.ts들을 각 feature 단위로 분리 (features/post/api/ 등)
 [x] 11. shared/lib에 유틸성 함수 더 추가
 [x] 12. feature/ui, feature/api 폴더로 실제 유저 행동 단위 컴포넌트/로직 옮기기
-[] 13. widgets 폴더 구조 설계 (예: PostWidget, CommentSection 등)
-[] 11. 최종적으로 PostManager.tsx는 위 컴포넌트들을 조립하는 코드만 남긴다
+[x] 13. widgets 폴더 구조 설계
+[x] 11. 최종적으로 PostManager.tsx는 위 컴포넌트들을 조립하는 코드만 남긴다
 
 
 📌 정리: 분리된 API 및 훅 구조
