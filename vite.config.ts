@@ -4,6 +4,7 @@ import path from "path"
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/front_5th_chapter2-3/", // 꼭 수정하세요!
   plugins: [react()],
   resolve: {
     alias: {
