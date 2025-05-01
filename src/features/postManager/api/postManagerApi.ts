@@ -1,5 +1,6 @@
 import { IPosts, ITestPosts, IPostResponse, ITags } from "@/entities/post/model/types"
 import { IUser } from "@/entities/user/model/types"
+import { getBaseUrl } from "@/shared/lib/getBaseUrl"
 
 /**
  * 게시물 가져오기
@@ -65,7 +66,7 @@ export const fetchPostsByTag = async (tag: string): Promise<ITestPosts> => {
  * @param searchQuery
  */
 export const fetchSearchPosts = async (searchQuery: string): Promise<IPostResponse> => {
-  const res = await fetch(`/api/posts/search?q=${searchQuery}`)
+  const res = await fetch(`${getBaseUrl()}/api/posts/search?q=${searchQuery}`)
   if (!res.ok) {
     throw new Error("Failed to search posts")
   }
@@ -77,7 +78,7 @@ export const fetchSearchPosts = async (searchQuery: string): Promise<IPostRespon
  * @returns
  */
 export const fetchTags = async () => {
-  const res = await fetch("/api/posts/tags")
+  const res = await fetch(`${getBaseUrl()}/api/posts/tags`)
   if (!res.ok) throw new Error("Failed to fetch tags")
   return res.json() as Promise<ITags[]>
 }
