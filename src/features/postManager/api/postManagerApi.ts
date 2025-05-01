@@ -9,11 +9,11 @@ import { getBaseUrl } from "@/shared/lib/getBaseUrl"
  * @returns
  */
 export const fetchPosts = async (limit: number, skip: number): Promise<ITestPosts> => {
-  const postRes = await fetch(`${getBaseUrl()}/api/posts?limit=${limit}&skip=${skip}`)
+  const postRes = await fetch(`${getBaseUrl()}/posts?limit=${limit}&skip=${skip}`)
   if (!postRes.ok) throw new Error("Failed to fetch posts")
   const postsData = await postRes.json()
 
-  const userRes = await fetch(`${getBaseUrl()}/api/users?limit=0&select=username,image`)
+  const userRes = await fetch(`${getBaseUrl()}/users?limit=0&select=username,image`)
   if (!userRes.ok) throw new Error("Failed to fetch users")
   const usersData = await userRes.json()
 
@@ -40,11 +40,11 @@ export const fetchPosts = async (limit: number, skip: number): Promise<ITestPost
  * @returns
  */
 export const fetchPostsByTag = async (tag: string): Promise<ITestPosts> => {
-  const postRes = await fetch(`${getBaseUrl()}/api/posts/tag/${tag}`)
+  const postRes = await fetch(`${getBaseUrl()}/posts/tag/${tag}`)
   if (!postRes.ok) throw new Error("Failed to fetch posts by tag")
   const postsData = await postRes.json()
 
-  const userRes = await fetch(`${getBaseUrl()}/api/users?limit=0&select=username,image`)
+  const userRes = await fetch(`${getBaseUrl()}/users?limit=0&select=username,image`)
   if (!userRes.ok) throw new Error("Failed to fetch users")
   const usersData = await userRes.json()
 
@@ -66,7 +66,7 @@ export const fetchPostsByTag = async (tag: string): Promise<ITestPosts> => {
  * @param searchQuery
  */
 export const fetchSearchPosts = async (searchQuery: string): Promise<IPostResponse> => {
-  const res = await fetch(`${getBaseUrl()}/api/posts/search?q=${searchQuery}`)
+  const res = await fetch(`${getBaseUrl()}/posts/search?q=${searchQuery}`)
   if (!res.ok) {
     throw new Error("Failed to search posts")
   }
@@ -78,7 +78,7 @@ export const fetchSearchPosts = async (searchQuery: string): Promise<IPostRespon
  * @returns
  */
 export const fetchTags = async () => {
-  const res = await fetch(`${getBaseUrl()}/api/posts/tags`)
+  const res = await fetch(`${getBaseUrl()}/posts/tags`)
   if (!res.ok) throw new Error("Failed to fetch tags")
   return res.json() as Promise<ITags[]>
 }
